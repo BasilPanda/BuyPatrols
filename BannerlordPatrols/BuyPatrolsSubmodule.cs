@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Reflection;
+using System.IO;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
 using System.Windows.Forms;
+using System.Text;
 
 namespace BuyPatrols
 {
@@ -17,7 +20,15 @@ namespace BuyPatrols
             try
             {
                 gameInitializer.AddBehavior(new BuyPatrols());
-            } catch(Exception e)
+                if(bool.Parse(Settings.LoadSetting("AddPatrolSpeedEnabled")))
+                {
+                    gameStarterObject.AddModel(new PartySpeedModelForPatrols());
+                }
+                if(bool.Parse(Settings.LoadSetting("PatrolWagesHintBox")))
+                {
+                    gameStarterObject.AddModel(new CalculateClanExpensesForPatrols());
+                }
+            } catch (Exception e)
             {
                 MessageBox.Show(e.ToString());
             }

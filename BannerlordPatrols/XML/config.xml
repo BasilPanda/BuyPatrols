@@ -1,0 +1,59 @@
+﻿<BuyPatrolsSettings>
+  
+  <!--Toggles the speed bonus for patrols. -->
+  <!--Turning this off will allow for mod compatibility with anything that tweaks party speed.-->
+  <!--Boolean values only.-->
+  <!--Default value=true-->
+  <AddPatrolSpeedEnabled>true</AddPatrolSpeedEnabled>
+  
+  <!--Adds an additional amount of speed to patrols.-->
+  <!--Decimal values only.-->
+  <!--Default value=3.5-->
+  <AddPatrolSpeed>3.5</AddPatrolSpeed>
+  
+  <!--Puts the daily patrol wages within the clan expenses boxes instead of an output text.-->
+  <!--Turning this off will allow for mod compatibility with anything that tweaks clan expenses-->
+  <!--Boolean values only.-->
+  <!--Default value=true-->
+  <PatrolWagesHintBox>true</PatrolWagesHintBox>
+  
+  <!--Modifies the base cost of hiring a patrol-->
+  <!--Integer values only.-->
+  <!--Default value=1250-->
+  <BaseCost>1250</BaseCost>
+  
+  <!--Modifies the daily wage amount. 0 makes it so there are no patrol wages to pay.-->
+  <!--Decimal values only.-->
+  <!--Default value=0.75-->
+  <DailyPatrolWageModifier>0.75</DailyPatrolWageModifier>
+  
+  <!--Modies the max cap of patrols per village-->
+  <!--Integer values only.-->
+  <!--Default value=3-->
+  <MaxPatrolCountPerVillage>3</MaxPatrolCountPerVillage>
+  
+  <!--Modifies the base average men per patrol. This affects all sizes. Medium is 2x and large is 3x this number-->
+  <!--Integer values only.-->
+  <!--Default value=16-->
+  <TroopsPerPatrol>16</TroopsPerPatrol>
+
+  <!--Forces patrols to be capped at large patrol size. Will randomly remove troops over the large patrol size.-->
+  <!--Boolean values only.-->
+  <!--Default value=false-->
+  <ForceTroopCapEnabled>false</ForceTroopCapEnabled>
+  
+  <!--The maxiumum distance a patrol will go before being pulled back to their home settlement.-->
+  <!--Integer values only.-->
+  <!--Default value=15-->
+  <PatrolTetherRange>15</PatrolTetherRange>
+
+  <!--Forces patrols to slowly regenerate on a daily basis up to large size.-->
+  <!--Boolean values only.-->
+  <!--Default value=false-->
+  <ForceRegenPatrol>false</ForceRegenPatrol>
+
+  <!--Toggles increase of notable relations by a little everyday for the number of patrols bought.-->
+  <!--Boolean values only.-->
+  <!--Default value=true-->
+  <IncreaseNotableRelations>true</IncreaseNotableRelations>
+</BuyPatrolsSettings>
