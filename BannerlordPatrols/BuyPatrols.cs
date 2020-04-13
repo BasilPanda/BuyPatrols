@@ -559,39 +559,60 @@ namespace BuyPatrols
                     foreach (MobileParty patrol in patrolProperties.patrols.ToList())
                     {
                         flag = true;
-                        if (patrol.PrisonRoster.Count > patrol.MemberRoster.Count / 4)
+                        Settlement quickestTown = null;
+                        float shortestDistance = float.MaxValue;
+                        if (patrol.Party.NumberOfPrisoners > 10)
                         {
+
                             IEnumerable<Settlement> playerSettlements = Clan.PlayerClan.Settlements;
                             if (playerSettlements != null)
                             {
-                                Settlement quickestTown = null;
-                                float shortestDistance = 999999;
                                 foreach (Settlement s in playerSettlements)
                                 {
-                                    if (s.OwnerClan == Clan.PlayerClan && (s.IsTown || s.IsCastle) && d.GetDistance(patrol, s) <= 30)
+                                    if (s.OwnerClan == Clan.PlayerClan && (s.IsTown || s.IsCastle))
                                     {
-                                        if(d.GetDistance(patrol, s) < shortestDistance)
+                                        if (d.GetDistance(patrol, s) < shortestDistance)
                                         {
+                                            //InformationManager.DisplayMessage(new InformationMessage(new TextObject("New quickest @ " + d.GetDistance(patrol, s) + " set to " + s.Name, null).ToString()));
                                             quickestTown = s;
+                                            shortestDistance = d.GetDistance(patrol, s);
                                         }
                                     }
                                 }
-                                if(quickestTown != null)
+                            }
+                            
+                        }
+                        if (quickestTown != null)
+                        {
+                            patrol.SetMoveGoToSettlement(quickestTown);
+                            continue;
+                        }
+                        if (patrol.DefaultBehavior == AiBehavior.EngageParty || patrol.DefaultBehavior == AiBehavior.FleeToPoint || patrol.IsGoingToSettlement)
+                        {
+                            if (patrol.DefaultBehavior == AiBehavior.EngageParty)
+                            {
+                                if (patrol.IsGoingToSettlement && !patrol.IsDisbanding && quickestTown == null)
                                 {
                                     patrol.SetMoveGoToSettlement(quickestTown);
                                 }
-                            }
-                        }
-                        if (patrol.DefaultBehavior == AiBehavior.EngageParty || patrol.DefaultBehavior == AiBehavior.FleeToPoint || patrol.DefaultBehavior == AiBehavior.GoToSettlement)
-                        {
-                            if(patrol.DefaultBehavior == AiBehavior.EngageParty)
-                            {
-
-                                if(d.GetDistance(patrol, patrol.HomeSettlement) > PatrolTetherRange)
+                                else if (d.GetDistance(patrol, patrol.HomeSettlement) > PatrolTetherRange)
                                 {
-                                    patrol.SetMoveGoToSettlement(patrol.HomeSettlement);
+                                    patrol.SetMoveGoToPoint(patrol.HomeSettlement.GatePosition);
+                                }
+
+                            }
+                            if(patrol.IsGoingToSettlement && quickestTown == null)
+                            {
+                                if (!patrol.IsDisbanding && d.GetDistance(patrol, patrol.HomeSettlement) <= 5)
+                                {
+                                    patrol.SetMovePatrolAroundSettlement(patrol.HomeSettlement);
                                 }
                             }
+                            continue;
+                        }
+                        if (!patrol.IsMoving)
+                        {
+                            patrol.SetMovePatrolAroundSettlement(patrol.HomeSettlement);
                             continue;
                         }
                         List<MobileParty> parties = partiesAroundPosition.GetPartiesAroundPosition(patrol.Position2D, 10f);
@@ -613,7 +634,7 @@ namespace BuyPatrols
                         {
                             if (d.GetDistance(patrol, patrol.HomeSettlement) > PatrolTetherRange)
                             {
-                                patrol.SetMoveGoToSettlement(patrol.HomeSettlement);
+                                patrol.SetMoveGoToPoint(patrol.HomeSettlement.GatePosition);
                             } else
                             {
                                 patrol.SetMovePatrolAroundSettlement(patrol.HomeSettlement);
@@ -745,23 +766,21 @@ namespace BuyPatrols
         {
             if(mobileParty != null && mobileParty.IsActive && mobileParty.Name.Contains("Patrol"))
             {
-                if(settlement.IsTown || settlement.IsCastle)
+                //InformationManager.DisplayMessage(new InformationMessage(new TextObject("Patrol entered " + settlement.Name, null).ToString()));
+                if (settlement.IsTown || settlement.IsCastle)
                 {
-                    MobileParty garrisonParty = settlement.Town.GarrisonParty;
-                    if (garrisonParty == null)
-                    {
-                        settlement.AddGarrisonParty(false);
-                        garrisonParty = settlement.Town.GarrisonParty;
-                    }
                     for (int i = 0; i < mobileParty.PrisonRoster.Count; i++)
                     {
                         TroopRosterElement prisoner = mobileParty.PrisonRoster.GetElementCopyAtIndex(i);
+                        int woundedNumber = prisoner.WoundedNumber;
                         if (prisoner.Character.IsHero)
                         {
                             EnterSettlementAction.ApplyForPrisoner(prisoner.Character.HeroObject, settlement);
                         }
-                        garrisonParty.AddPrisoner(prisoner.Character, prisoner.Number);
+                        settlement.Party.PrisonRoster.AddToCounts(prisoner.Character,  prisoner.Number, false, woundedNumber, 0, true, -1);
+                        mobileParty.PrisonRoster.RemoveTroop(prisoner.Character, prisoner.Number, default(UniqueTroopDescriptor), 0);
                     }
+                    mobileParty.SetMoveGoToPoint(mobileParty.HomeSettlement.GatePosition);
                 }
             }
         }
