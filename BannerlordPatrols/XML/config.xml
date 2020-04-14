@@ -6,13 +6,13 @@
   <!--Default value=true-->
   <AddPatrolSpeedEnabled>true</AddPatrolSpeedEnabled>
   
-  <!--Adds an additional amount of speed to patrols.-->
+  <!--Adds an additional amount of speed to patrols if it is enabled.-->
   <!--Decimal values only.-->
   <!--Default value=3.5-->
   <AddPatrolSpeed>3.5</AddPatrolSpeed>
   
-  <!--Puts the daily patrol wages within the clan expenses boxes instead of an output text.-->
-  <!--Turning this off will allow for mod compatibility with anything that tweaks clan expenses-->
+  <!--Puts the daily patrol wages within the clan expenses boxes instead of a message on the bottom left.-->
+  <!--Turning this off will allow for mod compatibility with anything that tweaks clan expenses and uses the old method.-->
   <!--Boolean values only.-->
   <!--Default value=true-->
   <PatrolWagesHintBox>true</PatrolWagesHintBox>
@@ -52,8 +52,13 @@
   <!--Default value=false-->
   <ForceRegenPatrol>false</ForceRegenPatrol>
 
-  <!--Toggles increase of notable relations by a little everyday for the number of patrols bought.-->
+  <!--Toggles 10% chance to increase of notable relations by a little everyday by the number of patrols bought.-->
   <!--Boolean values only.-->
   <!--Default value=true-->
   <IncreaseNotableRelations>true</IncreaseNotableRelations>
+
+  <!--The maxiumum relations a player can get from having patrols.-->
+  <!--Integer values only.-->
+  <!--Default value=25-->
+  <RelationCap>25</RelationCap>
 </BuyPatrolsSettings>

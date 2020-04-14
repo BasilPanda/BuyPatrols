@@ -665,11 +665,11 @@ namespace BuyPatrols
                         {
                             generateFood(patrol);
                         }
-                        if (patrol.MemberRoster.Count > TroopsPerPatrol * 3 * 1.1 && ForceTroopCapEnabled)
+                        if (patrol.Party.NumberOfAllMembers > TroopsPerPatrol * 3 * 1.1 && ForceTroopCapEnabled)
                         {
                             patrol.MemberRoster.KillNumberOfMenRandomly((int)Math.Floor(patrol.MemberRoster.Count - TroopsPerPatrol * 3 * 1.1), false);
                         }
-                        if (patrol.MemberRoster.Count < TroopsPerPatrol * 3 * 1.1 && ForceRegenPatrol)
+                        if (patrol.Party.NumberOfAllMembers < TroopsPerPatrol * 3 * 1.1 && ForceRegenPatrol)
                         {
                             patrol.AddElementToMemberRoster(patrol.Party.Culture.BasicTroop, 1, false);
                         }
@@ -745,11 +745,14 @@ namespace BuyPatrols
                     {
                         foreach (Hero notable in settlement.Notables)
                         {
-                            // 10% chance of apply increase in relations
-                            if (rand.Next(0, 100) < 10)
+                            if(notable.GetRelationWithPlayer() < 50)
                             {
-                                ChangeRelationAction.ApplyRelationChangeBetweenHeroes(Hero.MainHero, notable, rand.Next(1, patrolProperties.patrols.Count * 2), true);
-                                flag = true;
+                                // 10% chance of apply increase in relations
+                                if (rand.Next(0, 100) < 10)
+                                {
+                                    ChangeRelationAction.ApplyRelationChangeBetweenHeroes(Hero.MainHero, notable, rand.Next(1, patrolProperties.patrols.Count + 1), true);
+                                    flag = true;
+                                }
                             }
                         }
 
