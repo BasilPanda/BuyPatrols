@@ -34,7 +34,8 @@ namespace BuyPatrols
         public float DailyPatrolWageModifier = float.Parse(Settings.LoadSetting("DailyPatrolWageModifier"));
         public int PatrolTetherRange = int.Parse(Settings.LoadSetting("PatrolTetherRange"));
         public int MaxPatrolCountPerVillage = int.Parse(Settings.LoadSetting("MaxPatrolCountPerVillage"));
-        public int MaxPatrolCountPerCastle = 0;//int.Parse(Settings.LoadSetting("MaxPatrolCountPerCastle"));
+        public int MaxPatrolCountPerCastle = int.Parse(Settings.LoadSetting("MaxPatrolCountPerCastle"));
+        public int RelationCap = int.Parse(Settings.LoadSetting("RelationCap"));
         #endregion
 
         private void OnSessionLaunched(CampaignGameStarter obj)
@@ -50,7 +51,7 @@ namespace BuyPatrols
             try
             {
                 AddPatrolDialog(obj);
-                //AddCastleDialog(obj);
+                AddCastleDialog(obj);
             } catch (Exception e)
             {
                 MessageBox.Show("Something screwed up in adding patrol dialog. " + e.ToString());
@@ -359,6 +360,7 @@ namespace BuyPatrols
 
                                         foreach (MobileParty patrol in patrolProperties.patrols.ToList())
                                         {
+                                            DisbandPartyAction.ApplyDisband(patrol);
                                             allPatrols.Remove(patrol);
                                             patrol.RemoveParty();
                                         }
@@ -745,7 +747,7 @@ namespace BuyPatrols
                     {
                         foreach (Hero notable in settlement.Notables)
                         {
-                            if(notable.GetRelationWithPlayer() < 50)
+                            if(notable.GetRelationWithPlayer() < RelationCap)
                             {
                                 // 10% chance of apply increase in relations
                                 if (rand.Next(0, 100) < 10)
