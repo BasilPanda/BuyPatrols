@@ -34,7 +34,7 @@ namespace BuyPatrols
         public float DailyPatrolWageModifier = float.Parse(Settings.LoadSetting("DailyPatrolWageModifier"));
         public int PatrolTetherRange = int.Parse(Settings.LoadSetting("PatrolTetherRange"));
         public int MaxPatrolCountPerVillage = int.Parse(Settings.LoadSetting("MaxPatrolCountPerVillage"));
-        public int MaxPatrolCountPerCastle = int.Parse(Settings.LoadSetting("MaxPatrolCountPerCastle"));
+        public int MaxPatrolCountPerCastle = 0;// int.Parse(Settings.LoadSetting("MaxPatrolCountPerCastle"));
         public int RelationCap = int.Parse(Settings.LoadSetting("RelationCap"));
         #endregion
 
@@ -51,7 +51,7 @@ namespace BuyPatrols
             try
             {
                 AddPatrolDialog(obj);
-                AddCastleDialog(obj);
+                //AddCastleDialog(obj);
             } catch (Exception e)
             {
                 MessageBox.Show("Something screwed up in adding patrol dialog. " + e.ToString());
@@ -89,7 +89,7 @@ namespace BuyPatrols
                 obj.AddGameMenuOption("village", "basilpatrol_manage_patrol", "Manage patrols",
                     (MenuCallbackArgs args) =>
                     {
-                        args.optionLeaveType = GameMenuOption.LeaveType.Recruit;
+                        args.optionLeaveType = GameMenuOption.LeaveType.Manage;
                         /*
                         if (Settlement.CurrentSettlement.OwnerClan != Clan.PlayerClan)
                         {
@@ -394,9 +394,9 @@ namespace BuyPatrols
 
         public void AddCastleDialog(CampaignGameStarter obj)
         {
-            obj.AddGameMenuOption("castle", "basilpatrol_castle_patrol", "Hire a patrol", (MenuCallbackArgs args) =>
+            obj.AddGameMenuOption("castle", "basilpatrol_castle_patrol", "Manage patrols", (MenuCallbackArgs args) =>
             {
-                args.optionLeaveType = GameMenuOption.LeaveType.Recruit;
+                args.optionLeaveType = GameMenuOption.LeaveType.Manage;
                 if (Settlement.CurrentSettlement.OwnerClan != Clan.PlayerClan)
                 {
                     return false;
@@ -507,6 +507,15 @@ namespace BuyPatrols
                         settlementPatrolProperties.Add(settlement.StringId, new PatrolProperties(settlement.StringId, new List<MobileParty>()));
                     }
                 }
+                /*
+                if(settlement.IsCastle)
+                {
+                    if (!settlementPatrolProperties.ContainsKey(settlement.StringId))
+                    {
+                        settlementPatrolProperties.Add(settlement.StringId, new PatrolProperties(settlement.StringId, new List<MobileParty>()));
+                    }
+                }
+                */
             }
             
         }
@@ -711,7 +720,14 @@ namespace BuyPatrols
         public void InitPatrolParty(MobileParty patrolParty, TextObject name, Clan faction, Settlement homeSettlement)
         {
             patrolParty.Name = name;
-            patrolParty.IsMilitia = true;
+            if(homeSettlement.IsVillage)
+            {
+                patrolParty.IsMilitia = true;
+            }
+            else
+            {
+                patrolParty.IsCaravan = true;
+            }
             patrolParty.HomeSettlement = homeSettlement;
             patrolParty.Party.Owner = faction.Leader;
             patrolParty.SetInititave(1f, 0f, 100000000f);

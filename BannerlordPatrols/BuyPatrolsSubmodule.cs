@@ -6,11 +6,30 @@ using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
 using System.Windows.Forms;
 using System.Text;
+using HarmonyLib;
 
 namespace BuyPatrols
 {
     class BuyPatrolsSubmodule : MBSubModuleBase
     {
+
+        protected override void OnSubModuleLoad()
+        {
+            base.OnSubModuleLoad();
+            try
+            {
+                Harmony harmony = new Harmony("BuyPatrols");
+                if (bool.Parse(Settings.LoadSetting("AddPatrolSpeedEnabled")))
+                {
+                    harmony.PatchAll();
+                }
+            }
+            catch (Exception ex)
+            {
+                FileLog.Log("Overall Patcher " + ex.Message);
+            }
+        }
+
         protected override void OnGameStart(Game game, IGameStarter gameStarterObject)
         {
             if (!(game.GameType is Campaign))
@@ -20,10 +39,12 @@ namespace BuyPatrols
             try
             {
                 gameInitializer.AddBehavior(new BuyPatrols());
-                if(bool.Parse(Settings.LoadSetting("AddPatrolSpeedEnabled")))
+                /*
+                if (bool.Parse(Settings.LoadSetting("AddPatrolSpeedEnabled")))
                 {
                     gameStarterObject.AddModel(new PartySpeedModelForPatrols());
                 }
+                */
                 if(bool.Parse(Settings.LoadSetting("PatrolWagesHintBox")))
                 {
                     gameStarterObject.AddModel(new CalculateClanExpensesForPatrols());
