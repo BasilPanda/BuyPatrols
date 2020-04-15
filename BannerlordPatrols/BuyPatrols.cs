@@ -13,7 +13,7 @@ using TaleWorlds.CampaignSystem.GameMenus;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.SandBox.CampaignBehaviors;
 using System.Windows.Forms;
-using TaleWorlds.CampaignSystem.SandBox;
+using TaleWorlds.CampaignSystem.ViewModelCollection;
 using TaleWorlds.CampaignSystem.SandBox.GameComponents.Map;
 using TaleWorlds.CampaignSystem.SandBox.GameComponents;
 
@@ -27,6 +27,8 @@ namespace BuyPatrols
         MobilePartiesAroundPositionList partiesAroundPosition = new MobilePartiesAroundPositionList(32);
         DefaultMapDistanceModel d = new DefaultMapDistanceModel();
         #region Settings
+        public bool TargetCaravans = bool.Parse(Settings.LoadSetting("TargetCaravans"));
+        public bool TargetVillagers = bool.Parse(Settings.LoadSetting("TargetVillagers"));
         public bool ForceRegenPatrol = bool.Parse(Settings.LoadSetting("ForceRegenPatrol"));
         public bool ForceTroopCapEnabled = bool.Parse(Settings.LoadSetting("ForceTroopCapEnabled"));
         public int TroopsPerPatrol = int.Parse(Settings.LoadSetting("TroopsPerPatrol"));
@@ -40,7 +42,7 @@ namespace BuyPatrols
 
         private void OnSessionLaunched(CampaignGameStarter obj)
         {
-            trackPatrols();
+            TrackPatrols();
             try
             {
                 AddPatrolMenu(obj);
@@ -68,7 +70,7 @@ namespace BuyPatrols
             }
             if (bool.Parse(Settings.LoadSetting("IncreaseNotableRelations")))
             {
-                increaseRelations();
+                IncreaseRelations();
             }
         }
         
@@ -81,6 +83,8 @@ namespace BuyPatrols
             //CampaignEvents.DailyTickClanEvent.AddNonSerializedListener(this, new Action<Clan>(this.OnDailyTickClan));
 
         }
+
+        #region Dialog & Menus Stuff
 
         public void AddPatrolMenu(CampaignGameStarter obj)
         {
@@ -362,7 +366,7 @@ namespace BuyPatrols
                                         {
                                             DisbandPartyAction.ApplyDisband(patrol);
                                             allPatrols.Remove(patrol);
-                                            patrol.RemoveParty();
+                                            //patrol.RemoveParty();
                                         }
                                         patrolProperties.patrols.Clear();
                                         settlementPatrolProperties[Settlement.CurrentSettlement.StringId] = patrolProperties;
@@ -496,31 +500,10 @@ namespace BuyPatrols
 
         #endregion
 
-        private void trackPatrols()
-        {
-            foreach(Settlement settlement in Settlement.All)
-            {
-                if(settlement.IsVillage)
-                {
-                    if(!settlementPatrolProperties.ContainsKey(settlement.StringId))
-                    {
-                        settlementPatrolProperties.Add(settlement.StringId, new PatrolProperties(settlement.StringId, new List<MobileParty>()));
-                    }
-                }
-                /*
-                if(settlement.IsCastle)
-                {
-                    if (!settlementPatrolProperties.ContainsKey(settlement.StringId))
-                    {
-                        settlementPatrolProperties.Add(settlement.StringId, new PatrolProperties(settlement.StringId, new List<MobileParty>()));
-                    }
-                }
-                */
-            }
-            
-        }
+        #endregion  
 
-        //SpawnAPartyInFaction
+        #region Spawn Patrol Stuff
+
         public MobileParty spawnPatrol(Settlement settlement, int amount)
         {
             PartyTemplateObject partyTemplate = settlement.Culture.DefaultPartyTemplate;
@@ -555,6 +538,21 @@ namespace BuyPatrols
             return mobileParty;
         }
 
+        public void InitPatrolParty(MobileParty patrolParty, TextObject name, Clan faction, Settlement homeSettlement)
+        {
+            patrolParty.Name = name;
+            patrolParty.IsMilitia = true;
+            patrolParty.HomeSettlement = homeSettlement;
+            patrolParty.Party.Owner = faction.Leader;
+            patrolParty.SetInititave(1f, 0f, 100000000f);
+            patrolParty.Party.Visuals.SetMapIconAsDirty();
+            GenerateFood(patrolParty);
+        }
+
+        #endregion
+
+        #region Patrol Behavior
+
         public void PatrolHourlyAi()
         {
             
@@ -570,41 +568,26 @@ namespace BuyPatrols
                     foreach (MobileParty patrol in patrolProperties.patrols.ToList())
                     {
                         flag = true;
-                        Settlement quickestTown = null;
-                        float shortestDistance = float.MaxValue;
-                        if (patrol.Party.NumberOfPrisoners > 10)
+                        // Unknown Behavior Potential Fix
+                        if(CheckUnknownBehavior(patrol))
                         {
-
-                            IEnumerable<Settlement> playerSettlements = Clan.PlayerClan.Settlements;
-                            if (playerSettlements != null)
-                            {
-                                foreach (Settlement s in playerSettlements)
-                                {
-                                    if (s.OwnerClan == Clan.PlayerClan && (s.IsTown || s.IsCastle))
-                                    {
-                                        if (d.GetDistance(patrol, s) < shortestDistance)
-                                        {
-                                            //InformationManager.DisplayMessage(new InformationMessage(new TextObject("New quickest @ " + d.GetDistance(patrol, s) + " set to " + s.Name, null).ToString()));
-                                            quickestTown = s;
-                                            shortestDistance = d.GetDistance(patrol, s);
-                                        }
-                                    }
-                                }
-                            }
-                            
-                        }
-                        if (quickestTown != null)
-                        {
-                            patrol.SetMoveGoToSettlement(quickestTown);
                             continue;
                         }
+                        // Prisoner Section
+                        Settlement closestTown = FindClosestTown(patrol);
+                        if (closestTown != null)
+                        {
+                            patrol.SetMoveGoToSettlement(closestTown);
+                            continue;
+                        }
+                        // Engage/Disband section
                         if (patrol.DefaultBehavior == AiBehavior.EngageParty || patrol.DefaultBehavior == AiBehavior.FleeToPoint || patrol.IsGoingToSettlement)
                         {
                             if (patrol.DefaultBehavior == AiBehavior.EngageParty)
                             {
-                                if (patrol.IsGoingToSettlement && !patrol.IsDisbanding && quickestTown == null)
+                                if (patrol.IsGoingToSettlement && patrol.IsDisbanding && closestTown == null)
                                 {
-                                    patrol.SetMoveGoToSettlement(quickestTown);
+                                    patrol.SetMoveGoToSettlement(closestTown);
                                 }
                                 else if (d.GetDistance(patrol, patrol.HomeSettlement) > PatrolTetherRange)
                                 {
@@ -612,7 +595,7 @@ namespace BuyPatrols
                                 }
 
                             }
-                            if(patrol.IsGoingToSettlement && quickestTown == null)
+                            if(patrol.IsGoingToSettlement && closestTown == null)
                             {
                                 if (!patrol.IsDisbanding && d.GetDistance(patrol, patrol.HomeSettlement) <= 5)
                                 {
@@ -626,6 +609,8 @@ namespace BuyPatrols
                             patrol.SetMovePatrolAroundSettlement(patrol.HomeSettlement);
                             continue;
                         }
+
+                        // Target AI
                         List<MobileParty> parties = partiesAroundPosition.GetPartiesAroundPosition(patrol.Position2D, 10f);
                         foreach(MobileParty possibleEnemy in parties.ToList())
                         {
@@ -633,6 +618,14 @@ namespace BuyPatrols
                                 !possibleEnemy.IsGarrison && (possibleEnemy.IsMoving || possibleEnemy.IsEngaging  || possibleEnemy.IsRaiding))
 
                             {
+                                if (!TargetVillagers && possibleEnemy.IsVillager)
+                                {
+                                    continue;
+                                }
+                                if(!TargetCaravans && possibleEnemy.IsCaravan)
+                                {
+                                    continue;
+                                }
                                 if(patrol.Party.TotalStrength > possibleEnemy.Party.TotalStrength)
                                 {
                                     patrol.SetMoveEngageParty(possibleEnemy);
@@ -674,7 +667,7 @@ namespace BuyPatrols
                     {
                         if (patrol.Food <= 3)
                         {
-                            generateFood(patrol);
+                            GenerateFood(patrol);
                         }
                         if (patrol.Party.NumberOfAllMembers > TroopsPerPatrol * 3 * 1.1 && ForceTroopCapEnabled)
                         {
@@ -717,25 +710,7 @@ namespace BuyPatrols
             }
         }
 
-        public void InitPatrolParty(MobileParty patrolParty, TextObject name, Clan faction, Settlement homeSettlement)
-        {
-            patrolParty.Name = name;
-            if(homeSettlement.IsVillage)
-            {
-                patrolParty.IsMilitia = true;
-            }
-            else
-            {
-                patrolParty.IsCaravan = true;
-            }
-            patrolParty.HomeSettlement = homeSettlement;
-            patrolParty.Party.Owner = faction.Leader;
-            patrolParty.SetInititave(1f, 0f, 100000000f);
-            patrolParty.Party.Visuals.SetMapIconAsDirty();
-            generateFood(patrolParty);
-        }
-
-        public void generateFood(MobileParty patrolParty)
+        public void GenerateFood(MobileParty patrolParty)
         {
             foreach (ItemObject itemObject in ItemObject.All)
             {
@@ -750,7 +725,7 @@ namespace BuyPatrols
             }
         }
 
-        public void increaseRelations()
+        public void IncreaseRelations()
         {
             PatrolProperties patrolProperties;
             bool flag = false;
@@ -806,6 +781,74 @@ namespace BuyPatrols
             }
         }
 
+        public bool CheckUnknownBehavior(MobileParty patrol)
+        {
+            TextObject textObject = new TextObject("{=QXBf26Rv}Unknown Behavior", null);
+            if (CampaignUIHelper.GetMobilePartyBehaviorText(patrol) == textObject.ToString())
+            {
+                if(patrol.IsDisbanding)
+                {
+                    DisbandPartyAction.CancelDisband(patrol);
+                }
+                patrol.SetMoveGoToPoint(patrol.HomeSettlement.GatePosition);
+                return true;
+            }
+            return false;
+        }
+
+        public Settlement FindClosestTown(MobileParty patrol)
+        {
+            Settlement settlement = null;
+            float shortestDistance = float.MaxValue;
+            if (patrol.Party.NumberOfPrisoners > 10)
+            {
+
+                IEnumerable<Settlement> playerSettlements = Clan.PlayerClan.Settlements;
+                if (playerSettlements != null)
+                {
+                    foreach (Settlement s in playerSettlements)
+                    {
+                        if (s.OwnerClan == Clan.PlayerClan && (s.IsTown || s.IsCastle))
+                        {
+                            if (d.GetDistance(patrol, s) < shortestDistance)
+                            {
+                                //InformationManager.DisplayMessage(new InformationMessage(new TextObject("New quickest @ " + d.GetDistance(patrol, s) + " set to " + s.Name, null).ToString()));
+                                settlement = s;
+                                shortestDistance = d.GetDistance(patrol, s);
+                            }
+                        }
+                    }
+                }
+            }
+            return settlement;
+        }
+
+        #endregion
+
+        private void TrackPatrols()
+        {
+            foreach (Settlement settlement in Settlement.All)
+            {
+                if (settlement.IsVillage)
+                {
+                    if (!settlementPatrolProperties.ContainsKey(settlement.StringId))
+                    {
+                        settlementPatrolProperties.Add(settlement.StringId, new PatrolProperties(settlement.StringId, new List<MobileParty>()));
+                    }
+                }
+                /*
+                if(settlement.IsCastle)
+                {
+                    if (!settlementPatrolProperties.ContainsKey(settlement.StringId))
+                    {
+                        settlementPatrolProperties.Add(settlement.StringId, new PatrolProperties(settlement.StringId, new List<MobileParty>()));
+                    }
+                }
+                */
+            }
+
+        }
+        
         public override void SyncData(IDataStore dataStore)
         {
             dataStore.SyncData("settlementPatrolProperties", ref settlementPatrolProperties);

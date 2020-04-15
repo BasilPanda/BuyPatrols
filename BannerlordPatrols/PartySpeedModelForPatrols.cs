@@ -27,6 +27,8 @@ namespace BuyPatrols
                 }
             }
         }
+
+
         
        /*
        public override float CalculateFinalSpeed(MobileParty mobileParty, float baseSpeed, StatExplainer explanation)

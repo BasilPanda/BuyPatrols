@@ -1,5 +1,15 @@
 ﻿<BuyPatrolsSettings>
   
+  <!--Toggles patrols targeting caravans. -->
+  <!--Boolean values only.-->
+  <!--Default value=false-->
+  <TargetCaravans>false</TargetCaravans>
+
+  <!--Toggles patrols targeting villagers. -->
+  <!--Boolean values only.-->
+  <!--Default value=false-->
+  <TargetVillagers>false</TargetVillagers>
+  
   <!--Toggles the speed bonus for patrols. -->
   <!--Turning this off will allow for mod compatibility with anything that tweaks party speed.-->
   <!--Boolean values only.-->
@@ -57,7 +67,7 @@
   <!--Default value=true-->
   <IncreaseNotableRelations>true</IncreaseNotableRelations>
 
-  <!--The maxiumum relations a player can get from having patrols.-->
+  <!--The relation cap for having patrols per notable.-->
   <!--Integer values only.-->
   <!--Default value=25-->
   <RelationCap>25</RelationCap>
