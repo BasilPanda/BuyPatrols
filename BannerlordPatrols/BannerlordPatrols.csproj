@@ -288,6 +288,7 @@
     <Compile Include="PartySpeedModelForPatrols.cs" />
     <Compile Include="PatrolProperties.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="IgnorePatrolsPatch.cs" />
     <Compile Include="Settings.cs" />
   </ItemGroup>
   <ItemGroup>

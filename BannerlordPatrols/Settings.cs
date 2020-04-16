@@ -50,14 +50,24 @@ namespace BuyPatrols
         [SettingProperty("Patrol Wages Hint Box", "When enabled, daily patrols wages will be included the clan expenses. When it is disabled, patrol wages will be notified on the bottom left.")]
         [SettingPropertyGroup("Patrol Settings")]
         public bool PatrolWagesHintBox { get; set; } = true;
+        /*
+        [XmlElement]
+        [SettingProperty("Notify Patrol Destroyed", "When enabled, will send a notification on the bottom left when a patrol has been destroyed.")]
+        [SettingPropertyGroup("Patrol Settings")]
+        public bool NotifyDestroyedPatrol { get; set; } = true;
 
+        [XmlElement]
+        [SettingProperty("Auto Buy on Patrol Destroy", "When enabled, will automatically hire a new medium or small patrol if you have the money.")]
+        [SettingPropertyGroup("Patrol Settings")]
+        public bool AutoBuyDestroyedPatrol { get; set; } = true;
+        */
         [XmlElement]
         [SettingProperty("Personal Patrol Bonus Speed", 0, 10, "The bonus speed that will be added to patrols within your clan.")]
         [SettingPropertyGroup("Patrol Settings")]
         public float AddPatrolSpeed { get; set; } = 3.5f;
 
         [XmlElement]
-        [SettingProperty("Base Cost to Patrols", 0, 50000, "The base cost to patrols. Base Cost + Hearth * 3 for small. Base Cost * 2 + Hearth * 6 for medium. Base Cost * 3 + Hearth * 9 for large.")]
+        [SettingProperty("Base Cost to Patrols", 0, 50000, "The base cost to patrols. The total cost of hiring a patrol is a combination of base cost + hearth or base cost + propserity.")]
         [SettingPropertyGroup("Patrol Settings")]
         public int BaseCost { get; set; } = 1250;
 
@@ -70,6 +80,11 @@ namespace BuyPatrols
         [SettingProperty("Patrols per Village", 1, 10, "Modifies the max amount of patrols per village.")]
         [SettingPropertyGroup("Patrol Settings")]
         public int MaxPatrolCountPerVillage { get; set; } = 3;
+
+        [XmlElement]
+        [SettingProperty("Patrols per Castle", 1, 10, "Modifies the max amount of patrols per castle.")]
+        [SettingPropertyGroup("Patrol Settings")]
+        public int MaxPatrolCountPerCastle { get; set; } = 3;
 
         [XmlElement]
         [SettingProperty("Base Patrol Size", 4, 64, "Modifies the base average men per patrol. This affects all sizes. Medium is 2x and large is 3x this number")]
