@@ -31,6 +31,7 @@ namespace BuyPatrols
         public bool TargetVillagers = bool.Parse(Settings.LoadSetting("TargetVillagers"));
         public bool ForceRegenPatrol = bool.Parse(Settings.LoadSetting("ForceRegenPatrol"));
         public bool ForceTroopCapEnabled = bool.Parse(Settings.LoadSetting("ForceTroopCapEnabled"));
+        public bool NotifyNotableRelations = bool.Parse(Settings.LoadSetting("NotifyNotableRelations"));
         public int TroopsPerPatrol = int.Parse(Settings.LoadSetting("TroopsPerPatrol"));
         public int BaseCost = int.Parse(Settings.LoadSetting("BaseCost"));
         public float DailyPatrolWageModifier = float.Parse(Settings.LoadSetting("DailyPatrolWageModifier"));
@@ -72,6 +73,10 @@ namespace BuyPatrols
             {
                 IncreaseRelations();
             }
+            if(bool.Parse(Settings.LoadSetting("AiHirePatrols")))
+            {
+                AiGeneratePatrols();
+            }
         }
         
         public override void RegisterEvents()
@@ -105,7 +110,9 @@ namespace BuyPatrols
                     (MenuCallbackArgs args) => { GameMenu.SwitchToMenu("basilpatrol_pay_menu"); }, false, 4);
 
                 obj.AddGameMenu("basilpatrol_pay_menu", "The {BASILPATROL_SETTLEMENT_TYPE} says they have the manpower but not the gear to " +
-                    "send men on patrols. He tells he can send up to {BASILPATROL_MAX_PATROL_AMOUNT} patrols if you are willing to pay their gear. Your clan must own the village to hire patrols. You can disband patrols from villages even if you no longer own it anymore.",
+                    "send men on patrols. He tells he can send up to {BASILPATROL_MAX_PATROL_AMOUNT} patrols if you are willing to pay their " +
+                    "gear. Your clan must own the village to hire patrols. Patrols will switch allegiance to the new clan owner if ownership changes. " +
+                    "Disbanding patrols will only affect patrols that are not engaging an enemy.",
                     (MenuCallbackArgs args) =>
                     {
                         if (Settlement.CurrentSettlement.IsVillage)
@@ -336,7 +343,7 @@ namespace BuyPatrols
                             {
                                 if (settlementPatrolProperties.TryGetValue(Settlement.CurrentSettlement.StringId, out patrolProperties))
                                 {
-                                    if (patrolProperties.patrols.Count > 0)
+                                    if (patrolProperties.patrols.Count > 0 && Settlement.CurrentSettlement.OwnerClan == Clan.PlayerClan)
                                     {
                                         return true;
                                     }
@@ -364,11 +371,13 @@ namespace BuyPatrols
 
                                         foreach (MobileParty patrol in patrolProperties.patrols.ToList())
                                         {
-                                            DisbandPartyAction.ApplyDisband(patrol);
-                                            allPatrols.Remove(patrol);
-                                            //patrol.RemoveParty();
+                                            if (!patrol.IsEngaging)
+                                            {
+                                                DisbandPartyAction.ApplyDisband(patrol);
+                                                allPatrols.Remove(patrol);
+                                                patrolProperties.patrols.Remove(patrol);
+                                            }
                                         }
-                                        patrolProperties.patrols.Clear();
                                         settlementPatrolProperties[Settlement.CurrentSettlement.StringId] = patrolProperties;
                                     }
                                 }
@@ -417,7 +426,7 @@ namespace BuyPatrols
             obj.AddPlayerLine("mod_buypatrols_disband", "mod_buypatrols_talk", "close_window", "Disband.", null, new ConversationSentence.OnConsequenceDelegate(this.conversation_patrol_disband_on_consequence), 100, null, null);
             obj.AddPlayerLine("mod_buypatrols_leave", "mod_buypatrols_talk", "close_window", "Carry on, then. Farewell.", null, new ConversationSentence.OnConsequenceDelegate(this.conversation_patrol_leave_on_consequence), 100, null, null);
             obj.AddDialogLine("mod_buypatrols_after_donate", "mod_buypatrols_after_donate", "mod_buypatrols_talk", "Anything else?", null, null, 100, null);
-
+            obj.AddPlayerLine("mod_leaderless_party_answer", "disbanding_leaderless_party_start_response", "close_window", "Disband now.", null, new ConversationSentence.OnConsequenceDelegate(this.conversation_patrol_disband_now_on_consquence), 100, null, null);
         }
 
         #region Conditionals
@@ -498,6 +507,13 @@ namespace BuyPatrols
             PartyScreenManager.OpenScreenAsDonateTroops(encounteredParty.MobileParty);
         }
 
+        private void conversation_patrol_disband_now_on_consquence()
+        {
+            PartyBase encounteredParty = PlayerEncounter.EncounteredParty;
+            encounteredParty.MobileParty.RemoveParty();
+            PlayerEncounter.LeaveEncounter = true;
+        }
+
         #endregion
 
         #endregion  
@@ -571,6 +587,7 @@ namespace BuyPatrols
                         // Unknown Behavior Potential Fix
                         if(CheckUnknownBehavior(patrol))
                         {
+                            patrol.SetMoveGoToPoint(patrol.FindReachablePointAroundPosition(patrol.HomeSettlement.GatePosition, 5));
                             continue;
                         }
                         // Prisoner Section
@@ -654,6 +671,7 @@ namespace BuyPatrols
 
         public void PatrolDailyAi()
         {
+            //KillUnknownBehaviorParties();
             PatrolProperties patrolProperties;
             foreach (Settlement settlement in Settlement.All)
             {
@@ -743,7 +761,7 @@ namespace BuyPatrols
                                 // 10% chance of apply increase in relations
                                 if (rand.Next(0, 100) < 10)
                                 {
-                                    ChangeRelationAction.ApplyRelationChangeBetweenHeroes(Hero.MainHero, notable, rand.Next(1, patrolProperties.patrols.Count + 1), true);
+                                    ChangeRelationAction.ApplyRelationChangeBetweenHeroes(Hero.MainHero, notable, rand.Next(1, patrolProperties.patrols.Count + 1), NotifyNotableRelations);
                                     flag = true;
                                 }
                             }
@@ -786,11 +804,6 @@ namespace BuyPatrols
             TextObject textObject = new TextObject("{=QXBf26Rv}Unknown Behavior", null);
             if (CampaignUIHelper.GetMobilePartyBehaviorText(patrol) == textObject.ToString())
             {
-                if(patrol.IsDisbanding)
-                {
-                    DisbandPartyAction.CancelDisband(patrol);
-                }
-                patrol.SetMoveGoToPoint(patrol.HomeSettlement.GatePosition);
                 return true;
             }
             return false;
@@ -802,7 +815,6 @@ namespace BuyPatrols
             float shortestDistance = float.MaxValue;
             if (patrol.Party.NumberOfPrisoners > 10)
             {
-
                 IEnumerable<Settlement> playerSettlements = Clan.PlayerClan.Settlements;
                 if (playerSettlements != null)
                 {
@@ -823,7 +835,33 @@ namespace BuyPatrols
             return settlement;
         }
 
+        public void KillUnknownBehaviorParties()
+        {
+            foreach(MobileParty party in MobileParty.All.ToList())
+            {
+                if (party.Name.Contains("Patrol") && CheckUnknownBehavior(party))
+                {
+                    party.RemoveParty();
+                }
+            }
+        }
+
         #endregion
+
+        public void AiGeneratePatrols()
+        {
+            PatrolProperties properties;
+            foreach (Settlement settlement in Settlement.All)
+            {
+                if (settlement.IsVillage && settlement.OwnerClan != Clan.PlayerClan)
+                {
+                    if (settlementPatrolProperties.ContainsKey(settlement.StringId))
+                    {
+                        settlementPatrolProperties.TryGetValue(settlement.StringId, out properties);
+                    }
+                }
+            }
+        }
 
         private void TrackPatrols()
         {
