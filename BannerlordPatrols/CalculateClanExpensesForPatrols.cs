@@ -25,7 +25,7 @@ namespace BuyPatrols
                 payAmount = 0;
                 if (party.Name.Contains("Patrol"))
                 {
-                    partyWage = (int)(party.GetTotalWage() * float.Parse(Settings.LoadSetting("DailyPatrolWageModifier")));
+                    partyWage = (int)(party.GetTotalWage() * Settings.Instance.DailyPatrolWageModifier);
                     total += partyWage;
                     if (applyWithdrawals && party.LeaderHero != null)
                     {

@@ -17,18 +17,20 @@ namespace BuyPatrols
         {
             if (mobileParty.Name.Contains("Patrol"))
             {
-                try
+                if (mobileParty.HomeSettlement.OwnerClan == Clan.PlayerClan)
                 {
-                    __result += float.Parse(Settings.LoadSetting("AddPatrolSpeed"));
-                }
-                catch (Exception ex)
+                    __result += Settings.Instance.AddPatrolSpeed;
+                } else
                 {
-                    MessageBox.Show(ex.ToString());
+                    __result += Settings.Instance.AddPatrolSpeedForAi;
                 }
-            }
+            } 
         }
 
-
+        static bool Prepare()
+        {
+            return Settings.Instance.AddPatrolSpeedEnabled;
+        }
         
        /*
        public override float CalculateFinalSpeed(MobileParty mobileParty, float baseSpeed, StatExplainer explanation)

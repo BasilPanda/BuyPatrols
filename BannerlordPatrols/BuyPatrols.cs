@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Reflection;
-using System.Xml;
-using System.Configuration;
 using System.Collections.Generic;
 using TaleWorlds.Localization;
 using TaleWorlds.CampaignSystem;
@@ -27,18 +24,18 @@ namespace BuyPatrols
         MobilePartiesAroundPositionList partiesAroundPosition = new MobilePartiesAroundPositionList(32);
         DefaultMapDistanceModel d = new DefaultMapDistanceModel();
         #region Settings
-        public bool TargetCaravans = bool.Parse(Settings.LoadSetting("TargetCaravans"));
-        public bool TargetVillagers = bool.Parse(Settings.LoadSetting("TargetVillagers"));
-        public bool ForceRegenPatrol = bool.Parse(Settings.LoadSetting("ForceRegenPatrol"));
-        public bool ForceTroopCapEnabled = bool.Parse(Settings.LoadSetting("ForceTroopCapEnabled"));
-        public bool NotifyNotableRelations = bool.Parse(Settings.LoadSetting("NotifyNotableRelations"));
-        public int TroopsPerPatrol = int.Parse(Settings.LoadSetting("TroopsPerPatrol"));
-        public int BaseCost = int.Parse(Settings.LoadSetting("BaseCost"));
-        public float DailyPatrolWageModifier = float.Parse(Settings.LoadSetting("DailyPatrolWageModifier"));
-        public int PatrolTetherRange = int.Parse(Settings.LoadSetting("PatrolTetherRange"));
-        public int MaxPatrolCountPerVillage = int.Parse(Settings.LoadSetting("MaxPatrolCountPerVillage"));
+        public bool TargetCaravans = Settings.Instance.TargetCaravans;
+        public bool TargetVillagers = Settings.Instance.TargetVillagers;
+        public bool ForceRegenPatrol = Settings.Instance.ForceRegenPatrol;
+        public bool ForceTroopCapEnabled = Settings.Instance.ForceTroopCapEnabled;
+        public bool NotifyNotableRelations = Settings.Instance.NotifyNotableRelations;
+        public int TroopsPerPatrol = Settings.Instance.TroopsPerPatrol;
+        public int BaseCost = Settings.Instance.BaseCost;
+        public float DailyPatrolWageModifier = Settings.Instance.DailyPatrolWageModifier;
+        public int PatrolTetherRange = Settings.Instance.PatrolTetherRange;
+        public int MaxPatrolCountPerVillage = Settings.Instance.MaxPatrolCountPerVillage;
         public int MaxPatrolCountPerCastle = 0;// int.Parse(Settings.LoadSetting("MaxPatrolCountPerCastle"));
-        public int RelationCap = int.Parse(Settings.LoadSetting("RelationCap"));
+        public int RelationCap = Settings.Instance.RelationCap;
         #endregion
 
         private void OnSessionLaunched(CampaignGameStarter obj)
@@ -65,15 +62,15 @@ namespace BuyPatrols
         private void OnDailyTick()
         {
             PatrolDailyAi();
-            if (!bool.Parse(Settings.LoadSetting("PatrolWagesHintBox")))
+            if (!Settings.Instance.PatrolWagesHintBox)
             {
                 PayPatrols();
             }
-            if (bool.Parse(Settings.LoadSetting("IncreaseNotableRelations")))
+            if (Settings.Instance.IncreaseNotableRelations)
             {
                 IncreaseRelations();
             }
-            if(bool.Parse(Settings.LoadSetting("AiHirePatrols")))
+            if(Settings.Instance.AiHirePatrols)
             {
                 AiGeneratePatrols();
             }
@@ -708,7 +705,7 @@ namespace BuyPatrols
             PatrolProperties patrolProperties;
             foreach (Settlement settlement in Settlement.All)
             {
-                if (settlement.IsVillage)
+                if (settlement.IsVillage && settlement.OwnerClan == Clan.PlayerClan)
                 {
                     settlementPatrolProperties.TryGetValue(settlement.StringId, out patrolProperties);
                     foreach (MobileParty patrol in patrolProperties.patrols.ToList())
@@ -752,7 +749,7 @@ namespace BuyPatrols
                 if (settlement.IsVillage)
                 {
                     settlementPatrolProperties.TryGetValue(settlement.StringId, out patrolProperties);
-                    if (patrolProperties.patrols.Count > 0)
+                    if (patrolProperties.patrols.Count > 0 && settlement.OwnerClan == Clan.PlayerClan)
                     {
                         foreach (Hero notable in settlement.Notables)
                         {
@@ -815,12 +812,12 @@ namespace BuyPatrols
             float shortestDistance = float.MaxValue;
             if (patrol.Party.NumberOfPrisoners > 10)
             {
-                IEnumerable<Settlement> playerSettlements = Clan.PlayerClan.Settlements;
+                IEnumerable<Settlement> playerSettlements = patrol.HomeSettlement.OwnerClan.Settlements;
                 if (playerSettlements != null)
                 {
                     foreach (Settlement s in playerSettlements)
                     {
-                        if (s.OwnerClan == Clan.PlayerClan && (s.IsTown || s.IsCastle))
+                        if (s.IsTown || s.IsCastle)
                         {
                             if (d.GetDistance(patrol, s) < shortestDistance)
                             {
@@ -858,6 +855,30 @@ namespace BuyPatrols
                     if (settlementPatrolProperties.ContainsKey(settlement.StringId))
                     {
                         settlementPatrolProperties.TryGetValue(settlement.StringId, out properties);
+                        if(properties != null && properties.patrols.Count <= MaxPatrolCountPerVillage && settlement.OwnerClan.Gold > BaseCost * 3 + properties.getPatrolCost() * 3)
+                        {
+                            if(rand.Next(0, 100) < Settings.Instance.AiGenerationChance)
+                            {
+                                MobileParty party;
+                                if (rand.Next(0, 100) < 60)
+                                {
+                                    GiveGoldAction.ApplyForCharacterToSettlement(settlement.OwnerClan.Leader, settlement, BaseCost + properties.getPatrolCost(), true);
+                                    party = spawnPatrol(settlement, TroopsPerPatrol);
+                                } else if(rand.Next(0, 100) < 85)
+                                {
+                                    GiveGoldAction.ApplyForCharacterToSettlement(settlement.OwnerClan.Leader, settlement, BaseCost * 2 + properties.getPatrolCost() * 2, true);
+                                    party = spawnPatrol(settlement, TroopsPerPatrol * 2);
+                                } else
+                                {
+                                    GiveGoldAction.ApplyForCharacterToSettlement(settlement.OwnerClan.Leader, settlement, BaseCost * 3 + properties.getPatrolCost() * 3, true);
+                                    party = spawnPatrol(settlement, TroopsPerPatrol * 3);
+                                }
+                                properties.patrols.Add(party);
+                                settlementPatrolProperties[settlement.StringId] = properties;
+                                allPatrols.Add(party);
+                                //InformationManager.DisplayMessage(new InformationMessage(new TextObject(settlement.OwnerClan.Leader.ToString() + " has hired a patrol at " + settlement.ToString()).ToString()));
+                            }
+                        }
                     }
                 }
             }
@@ -909,7 +930,7 @@ namespace BuyPatrols
                 ConstructContainerDefinition(typeof(Dictionary<string, PatrolProperties>));
             }
         }
-       
+
     }
     
 }
