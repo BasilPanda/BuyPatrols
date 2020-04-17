@@ -4,15 +4,12 @@ using TaleWorlds.Localization;
 using TaleWorlds.CampaignSystem;
 using System.Linq;
 using TaleWorlds.Core;
-using TaleWorlds.Library;
 using TaleWorlds.SaveSystem;
 using TaleWorlds.CampaignSystem.GameMenus;
 using TaleWorlds.CampaignSystem.Actions;
-using TaleWorlds.CampaignSystem.SandBox.CampaignBehaviors;
 using System.Windows.Forms;
 using TaleWorlds.CampaignSystem.ViewModelCollection;
 using TaleWorlds.CampaignSystem.SandBox.GameComponents.Map;
-using TaleWorlds.CampaignSystem.SandBox.GameComponents;
 
 namespace BuyPatrols
 {
@@ -23,6 +20,7 @@ namespace BuyPatrols
         Random rand = new Random();
         MobilePartiesAroundPositionList partiesAroundPosition = new MobilePartiesAroundPositionList(32);
         DefaultMapDistanceModel d = new DefaultMapDistanceModel();
+        
         #region Settings
         public bool TargetCaravans = Settings.Instance.TargetCaravans;
         public bool TargetVillagers = Settings.Instance.TargetVillagers;
@@ -884,7 +882,7 @@ namespace BuyPatrols
                     if (settlementPatrolProperties.ContainsKey(settlement.StringId))
                     {
                         settlementPatrolProperties.TryGetValue(settlement.StringId, out properties);
-                        if(properties != null && properties.patrols.Count <= MaxPatrolCountPerVillage && settlement.OwnerClan.Gold > (BaseCost + properties.getPatrolCost()) * 3)
+                        if(properties != null && properties.patrols.Count < Settings.Instance.AiMaxPatrolPerSettlement && settlement.OwnerClan.Gold > (BaseCost + properties.getPatrolCost()) * 3)
                         {
                             if(rand.Next(0, 100) < Settings.Instance.AiGenerationChance)
                             {
