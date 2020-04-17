@@ -10,6 +10,7 @@ using TaleWorlds.CampaignSystem.Actions;
 using System.Windows.Forms;
 using TaleWorlds.CampaignSystem.ViewModelCollection;
 using TaleWorlds.CampaignSystem.SandBox.GameComponents.Map;
+using TaleWorlds.Library;
 
 namespace BuyPatrols
 {
@@ -71,6 +72,10 @@ namespace BuyPatrols
             if(Settings.Instance.AiHirePatrols)
             {
                 AiGeneratePatrols();
+            }
+            if (Settings.Instance.NukeAllPatrols)
+            {
+                AttemptToDestroyAllPatrols();
             }
         }
         
@@ -344,15 +349,7 @@ namespace BuyPatrols
                                     settlementPatrolProperties[Settlement.CurrentSettlement.StringId] = patrolProperties;
                                 }
                             }
-                            
-                            if (Settlement.CurrentSettlement.IsVillage)
-                            {
-                                GameMenu.SwitchToMenu("basilpatrol_pay_menu");
-                            }
-                            else
-                            {
-                                GameMenu.SwitchToMenu("basilpatrol_pay_menu");
-                            }
+                            GameMenu.SwitchToMenu("basilpatrol_pay_menu");
                         }
                         catch(Exception e)
                         {
@@ -851,6 +848,39 @@ namespace BuyPatrols
             }
         }
 
+        public void AttemptToDestroyAllPatrols()
+        {
+            PatrolProperties properties;
+            int remaining = 0;
+            int destroyed = 0;
+            foreach(string id in settlementPatrolProperties.Keys.ToList())
+            {
+                settlementPatrolProperties.TryGetValue(id, out properties);
+                if(properties != null)
+                {
+                    if(properties.patrols.Count != 0)
+                    {
+                        foreach(MobileParty patrol in properties.patrols.ToList())
+                        {
+                            if (patrol.IsEngaging)
+                            {
+                                remaining++;
+                            }
+                            else
+                            {
+                                properties.patrols.Remove(patrol);
+                                allPatrols.Remove(patrol);
+                                patrol.RemoveParty();
+                                destroyed++;
+                            }
+                        }
+                    }
+                }
+            }
+            InformationManager.DisplayMessage(new InformationMessage(destroyed + " patrols have been removed today.", Colors.Red));
+            InformationManager.DisplayMessage(new InformationMessage("There are " + remaining + " patrols remaining and are currently in engagement.", Colors.Cyan));
+        }
+
         #endregion
 
         public void AiGeneratePatrols()
@@ -858,7 +888,7 @@ namespace BuyPatrols
             PatrolProperties properties;
             foreach (Settlement settlement in Settlement.All)
             {
-                if (settlement.IsVillage && settlement.OwnerClan != Clan.PlayerClan)
+                if (settlement.IsVillage && settlement.OwnerClan != Clan.PlayerClan && settlement.Village.Hearth <= 500)
                 {
                     if (settlementPatrolProperties.ContainsKey(settlement.StringId))
                     {

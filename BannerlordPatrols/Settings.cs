@@ -11,6 +11,9 @@ namespace BuyPatrols
 
         #region Main Settings
 
+        [SettingProperty("REMOVE ALL PATROLS", hintText: "When enabled, will attempt to delete ALL patrols that aren't engaging a party. This might take several days. Will notify the number of patrols left and destroyed.")]
+        [SettingPropertyGroup(" Removal Settings")]
+        public bool NukeAllPatrols { get; set; } = false;
 
         [SettingProperty("Target Caravans", hintText: "When enabled, patrols will target caravans.")]
         [SettingPropertyGroup("Patrol Settings")]

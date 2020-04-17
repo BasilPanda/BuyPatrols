@@ -4,6 +4,7 @@ using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
 using System.Windows.Forms;
 using HarmonyLib;
+using TaleWorlds.Library;
 
 namespace BuyPatrols
 {
@@ -25,6 +26,15 @@ namespace BuyPatrols
             }
         }
 
+        protected override void OnBeforeInitialModuleScreenSetAsRoot()
+        {
+            InformationManager.DisplayMessage(new InformationMessage("BuyPatrols Loaded!", Colors.Green));
+            if (Settings.Instance.NukeAllPatrols)
+            {
+                InformationManager.DisplayMessage(new InformationMessage("BuyPatrols WARNING: DESTROYING ALL PATROLS DAILY OPTION ENABLED.", Colors.Red));
+            }
+        }
+
         protected override void OnGameStart(Game game, IGameStarter gameStarterObject)
         {
             if (!(game.GameType is Campaign))
@@ -34,7 +44,7 @@ namespace BuyPatrols
             try
             {
                 gameInitializer.AddBehavior(new BuyPatrols());
-                if(Settings.Instance.PatrolWagesHintBox)
+                if (Settings.Instance.PatrolWagesHintBox)
                 {
                     gameStarterObject.AddModel(new CalculateClanExpensesForPatrols());
                 }
