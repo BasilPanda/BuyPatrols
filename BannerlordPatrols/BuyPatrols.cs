@@ -174,11 +174,11 @@ namespace BuyPatrols
                             }
                             if (Settlement.CurrentSettlement.IsVillage)
                             {
-                                GameMenu.SwitchToMenu("village");
+                                GameMenu.SwitchToMenu("basilpatrol_pay_menu");
                             }
                             else
                             {
-                                GameMenu.SwitchToMenu("castle");
+                                GameMenu.SwitchToMenu("basilpatrol_pay_menu");
                             }
                         } catch(Exception e)
                         {
@@ -237,11 +237,11 @@ namespace BuyPatrols
                             }
                             if (Settlement.CurrentSettlement.IsVillage)
                             {
-                                GameMenu.SwitchToMenu("village");
+                                GameMenu.SwitchToMenu("basilpatrol_pay_menu");
                             }
                             else
                             {
-                                GameMenu.SwitchToMenu("castle");
+                                GameMenu.SwitchToMenu("basilpatrol_pay_menu");
                             }
                         } catch (Exception e)
                         {
@@ -301,11 +301,11 @@ namespace BuyPatrols
                             }
                             if (Settlement.CurrentSettlement.IsVillage)
                             {
-                                GameMenu.SwitchToMenu("village");
+                                GameMenu.SwitchToMenu("basilpatrol_pay_menu");
                             }
                             else
                             {
-                                GameMenu.SwitchToMenu("castle");
+                                GameMenu.SwitchToMenu("basilpatrol_pay_menu");
                             }
                         }
                         catch(Exception e)
@@ -366,11 +366,11 @@ namespace BuyPatrols
                             
                             if (Settlement.CurrentSettlement.IsVillage)
                             {
-                                GameMenu.SwitchToMenu("village");
+                                GameMenu.SwitchToMenu("basilpatrol_pay_menu");
                             }
                             else
                             {
-                                GameMenu.SwitchToMenu("castle");
+                                GameMenu.SwitchToMenu("basilpatrol_pay_menu");
                             }
                         }
                         catch(Exception e)
