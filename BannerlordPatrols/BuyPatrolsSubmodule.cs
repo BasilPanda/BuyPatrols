@@ -7,7 +7,6 @@ using TaleWorlds.MountAndBlade;
 using System.Windows.Forms;
 using System.Text;
 using HarmonyLib;
-using ModLib;
 
 namespace BuyPatrols
 {
@@ -19,10 +18,6 @@ namespace BuyPatrols
             base.OnSubModuleLoad();
             try
             {
-                FileDatabase.Initialise("zzzBuyPatrols");
-                Settings settings = FileDatabase.Get<Settings>(Settings.InstanceID);
-                if (settings == null) settings = new Settings();
-                SettingsDatabase.RegisterSettings(settings);
                 Harmony harmony = new Harmony("BuyPatrols");
                 harmony.PatchAll();
                 

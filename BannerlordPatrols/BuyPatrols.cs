@@ -261,7 +261,7 @@ namespace BuyPatrols
                             PatrolProperties patrolProperties;
                             string settlementID = Settlement.CurrentSettlement.StringId;
                             settlementPatrolProperties.TryGetValue(settlementID, out patrolProperties);
-                            int cost = (BaseCost + patrolProperties.getPatrolCost()) * 4;
+                            int cost = (BaseCost + patrolProperties.getPatrolCost()) * 3;
                             MBTextManager.SetTextVariable("BASILPATROL_LARGE_COST", cost, false);
                             MBTextManager.SetTextVariable("GOLD_ICON", "<img src=\"Icons\\Coin@2x\">");
                             //MBTextManager.SetTextVariable("BASILPATROL_COST", patrolProperties.getPatrolCost, false);
@@ -296,7 +296,7 @@ namespace BuyPatrols
                             PatrolProperties patrolProperties;
                             string settlementID = Settlement.CurrentSettlement.StringId;
                             settlementPatrolProperties.TryGetValue(settlementID, out patrolProperties);
-                            int cost = (BaseCost + patrolProperties.getPatrolCost()) * 4;
+                            int cost = (BaseCost + patrolProperties.getPatrolCost()) * 3;
                             if (AttemptAddPatrolToDictionary(Settlement.CurrentSettlement, patrolProperties, cost, 3))
                             {
                                 InformationManager.DisplayMessage(new InformationMessage("You have hired a patrol at " + Settlement.CurrentSettlement.ToString()));
@@ -439,7 +439,7 @@ namespace BuyPatrols
             try
             {
                 if (PlayerEncounter.Current != null && Campaign.Current.CurrentConversationContext == ConversationContext.PartyEncounter && 
-                    encounteredParty.IsMobile && encounteredParty.Name.Contains("Patrol") && encounteredParty.IsActive)
+                    encounteredParty.IsMobile && encounteredParty.Name.Contains("Patrol") && encounteredParty.IsActive && encounteredParty.MobileParty.HomeSettlement.OwnerClan == Clan.PlayerClan)
                 {
                     return true;
                 }
@@ -884,23 +884,23 @@ namespace BuyPatrols
                     if (settlementPatrolProperties.ContainsKey(settlement.StringId))
                     {
                         settlementPatrolProperties.TryGetValue(settlement.StringId, out properties);
-                        if(properties != null && properties.patrols.Count <= MaxPatrolCountPerVillage && settlement.OwnerClan.Gold > BaseCost * 3 + properties.getPatrolCost() * 3)
+                        if(properties != null && properties.patrols.Count <= MaxPatrolCountPerVillage && settlement.OwnerClan.Gold > (BaseCost + properties.getPatrolCost()) * 3)
                         {
                             if(rand.Next(0, 100) < Settings.Instance.AiGenerationChance)
                             {
                                 MobileParty party;
                                 if (rand.Next(0, 100) < 60)
                                 {
-                                    GiveGoldAction.ApplyForCharacterToSettlement(settlement.OwnerClan.Leader, settlement, BaseCost + properties.getPatrolCost(), true);
-                                    party = spawnPatrol(settlement, TroopsPerPatrol);
+                                    GiveGoldAction.ApplyForCharacterToSettlement(settlement.OwnerClan.Leader, settlement, (BaseCost + properties.getPatrolCost()) * 3, true);
+                                    party = spawnPatrol(settlement, TroopsPerPatrol * 3);
                                 } else if(rand.Next(0, 100) < 85)
                                 {
-                                    GiveGoldAction.ApplyForCharacterToSettlement(settlement.OwnerClan.Leader, settlement, BaseCost * 2 + properties.getPatrolCost() * 2, true);
+                                    GiveGoldAction.ApplyForCharacterToSettlement(settlement.OwnerClan.Leader, settlement, (BaseCost + properties.getPatrolCost()) * 2, true);
                                     party = spawnPatrol(settlement, TroopsPerPatrol * 2);
                                 } else
                                 {
-                                    GiveGoldAction.ApplyForCharacterToSettlement(settlement.OwnerClan.Leader, settlement, BaseCost * 3 + properties.getPatrolCost() * 3, true);
-                                    party = spawnPatrol(settlement, TroopsPerPatrol * 3);
+                                    GiveGoldAction.ApplyForCharacterToSettlement(settlement.OwnerClan.Leader, settlement, BaseCost + properties.getPatrolCost(), true);
+                                    party = spawnPatrol(settlement, TroopsPerPatrol);
                                 }
                                 properties.patrols.Add(party);
                                 settlementPatrolProperties[settlement.StringId] = properties;
