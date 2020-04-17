@@ -15,7 +15,7 @@ namespace BuyPatrols
     {
         static void Postfix(DefaultPartySpeedCalculatingModel __instance, MobileParty mobileParty, float baseSpeed, StatExplainer explanation, ref float __result)
         {
-            if (mobileParty.Name.Contains("Patrol"))
+            if (mobileParty.Name.Contains("Patrol") && Settings.Instance.AddPatrolSpeedEnabled)
             {
                 if (mobileParty.HomeSettlement.OwnerClan == Clan.PlayerClan)
                 {
@@ -25,11 +25,6 @@ namespace BuyPatrols
                     __result += Settings.Instance.AddPatrolSpeedForAi;
                 }
             } 
-        }
-
-        static bool Prepare()
-        {
-            return Settings.Instance.AddPatrolSpeedEnabled;
         }
         
        /*

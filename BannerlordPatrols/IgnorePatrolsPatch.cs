@@ -8,6 +8,7 @@ using TaleWorlds.CampaignSystem.SandBox.CampaignBehaviors;
 
 namespace BuyPatrols
 {
+    
     [HarmonyPatch(typeof(MilitiasCampaignBehavior), "HourlyTick")]
     class IgnorePatrolsPatch
     {
@@ -63,5 +64,6 @@ namespace BuyPatrols
             }
         }
         */
+        
     }
 }

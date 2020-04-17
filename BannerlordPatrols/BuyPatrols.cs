@@ -172,14 +172,8 @@ namespace BuyPatrols
                             {
                                 InformationManager.DisplayMessage(new InformationMessage("You have hired a patrol at " + Settlement.CurrentSettlement.ToString()));
                             }
-                            if (Settlement.CurrentSettlement.IsVillage)
-                            {
-                                GameMenu.SwitchToMenu("basilpatrol_pay_menu");
-                            }
-                            else
-                            {
-                                GameMenu.SwitchToMenu("basilpatrol_pay_menu");
-                            }
+                            GameMenu.SwitchToMenu("basilpatrol_pay_menu");
+                            
                         } catch(Exception e)
                         {
                             MessageBox.Show("Error in small purchase..." + e.ToString());
@@ -235,14 +229,8 @@ namespace BuyPatrols
                             {
                                 InformationManager.DisplayMessage(new InformationMessage("You have hired a patrol at " + Settlement.CurrentSettlement.ToString()));
                             }
-                            if (Settlement.CurrentSettlement.IsVillage)
-                            {
-                                GameMenu.SwitchToMenu("basilpatrol_pay_menu");
-                            }
-                            else
-                            {
-                                GameMenu.SwitchToMenu("basilpatrol_pay_menu");
-                            }
+                            GameMenu.SwitchToMenu("basilpatrol_pay_menu");
+                            
                         } catch (Exception e)
                         {
                             MessageBox.Show("Error in medium purchase... " + e.ToString());
@@ -299,14 +287,7 @@ namespace BuyPatrols
                             {
                                 InformationManager.DisplayMessage(new InformationMessage("You have hired a patrol at " + Settlement.CurrentSettlement.ToString()));
                             }
-                            if (Settlement.CurrentSettlement.IsVillage)
-                            {
-                                GameMenu.SwitchToMenu("basilpatrol_pay_menu");
-                            }
-                            else
-                            {
-                                GameMenu.SwitchToMenu("basilpatrol_pay_menu");
-                            }
+                            GameMenu.SwitchToMenu("basilpatrol_pay_menu");
                         }
                         catch(Exception e)
                         {
