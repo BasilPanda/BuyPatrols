@@ -28,10 +28,10 @@ namespace BuyPatrols
 
         protected override void OnBeforeInitialModuleScreenSetAsRoot()
         {
-            InformationManager.DisplayMessage(new InformationMessage("BuyPatrols Loaded!", Colors.Green));
+            InformationManager.DisplayMessage(new InformationMessage("BuyPatrols Loaded!", new Color(95/255, 1, 90/255)));
             if (Settings.Instance.NukeAllPatrols)
             {
-                InformationManager.DisplayMessage(new InformationMessage("BuyPatrols WARNING: DESTROYING ALL PATROLS DAILY OPTION ENABLED.", Colors.Red));
+                InformationManager.DisplayMessage(new InformationMessage("BuyPatrols WARNING: DESTROYING ALL PATROLS DAILY OPTION ENABLED.", new Color(1, 73/255, 73/255)));
             }
         }
 

@@ -85,9 +85,8 @@ namespace BuyPatrols
             CampaignEvents.HourlyTickEvent.AddNonSerializedListener(this, new Action(this.PatrolHourlyAi));
             CampaignEvents.DailyTickEvent.AddNonSerializedListener(this, new Action(this.OnDailyTick));
             CampaignEvents.SettlementEntered.AddNonSerializedListener(this, new Action<MobileParty, Settlement, Hero>(this.OnSettlementEntered));
-            //CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, new Action<MobileParty, PartyBase>(this.NotifyDestroyedPatrol));
-            //CampaignEvents.DailyTickClanEvent.AddNonSerializedListener(this, new Action<Clan>(this.OnDailyTickClan));
-
+            CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, new Action<MobileParty, PartyBase>(this.NotifyDestroyedPatrol));
+            
         }
 
         #region Dialog & Menus Stuff
@@ -100,12 +99,12 @@ namespace BuyPatrols
                     (MenuCallbackArgs args) =>
                     {
                         args.optionLeaveType = GameMenuOption.LeaveType.Manage;
-                        /*
-                        if (Settlement.CurrentSettlement.OwnerClan != Clan.PlayerClan)
+                        
+                        if (Settlement.CurrentSettlement.OwnerClan != Clan.PlayerClan && Settings.Instance.MaxPatrolCountPerVillage != 0)
                         {
                             return false;
                         }
-                        */
+                        
                         return true;
                     },
                     (MenuCallbackArgs args) => { GameMenu.SwitchToMenu("basilpatrol_pay_menu"); }, false, 4);
@@ -370,7 +369,7 @@ namespace BuyPatrols
             obj.AddGameMenuOption("castle", "basilpatrol_castle_patrol", "Manage patrols", (MenuCallbackArgs args) =>
             {
                 args.optionLeaveType = GameMenuOption.LeaveType.Manage;
-                if (Settlement.CurrentSettlement.OwnerClan != Clan.PlayerClan)
+                if (Settlement.CurrentSettlement.OwnerClan != Clan.PlayerClan && Settings.Instance.MaxPatrolCountPerCastle != 0)
                 {
                     return false;
                 }
@@ -579,8 +578,8 @@ namespace BuyPatrols
                 if (settlement.IsVillage || settlement.IsCastle)
                 {
                     settlementPatrolProperties.TryGetValue(settlement.StringId, out patrolProperties);
-                    patrolProperties.patrols.RemoveAll(x => x.MemberRoster.Count == 0);
-                    allPatrols.Clear();
+                    patrolProperties.patrols.RemoveAll(x => x.MemberRoster.IsEmpty());
+                    //allPatrols.Clear();
                     bool flag = true;
                     foreach (MobileParty patrol in patrolProperties.patrols.ToList())
                     {
@@ -664,7 +663,7 @@ namespace BuyPatrols
                             }
                         }
                     }
-                    allPatrols.AddRange(patrolProperties.patrols);
+                    //allPatrols.AddRange(patrolProperties.patrols);
                     settlementPatrolProperties[settlement.StringId] = patrolProperties;
                 }
             }
@@ -680,8 +679,8 @@ namespace BuyPatrols
                 if(settlement.IsVillage || settlement.IsCastle)
                 {
                     settlementPatrolProperties.TryGetValue(settlement.StringId, out patrolProperties);
-                    patrolProperties.patrols.RemoveAll(x => x.MemberRoster.Count == 0);
-                    allPatrols.Clear();
+                    patrolProperties.patrols.RemoveAll(x => x.MemberRoster.IsEmpty());
+                    //allPatrols.Clear();
 
                     foreach (MobileParty patrol in patrolProperties.patrols.ToList())
                     {
@@ -698,7 +697,7 @@ namespace BuyPatrols
                             patrol.AddElementToMemberRoster(patrol.Party.Culture.BasicTroop, 1, false);
                         }
                     }
-                    allPatrols.AddRange(patrolProperties.patrols);
+                    //allPatrols.AddRange(patrolProperties.patrols);
                     settlementPatrolProperties[settlement.StringId] = patrolProperties;
                 }
             }
@@ -883,12 +882,53 @@ namespace BuyPatrols
 
         #endregion
 
+        private void NotifyDestroyedPatrol(MobileParty destroyedParty, PartyBase destroyerParty)
+        {
+            try
+            {
+                if (destroyedParty != null && destroyedParty.Name.ToString().EndsWith("Patrol"))
+                {
+                    MobileParty patrol = allPatrols.FirstOrDefault(x => x == destroyedParty);
+                    if (patrol != null)
+                    {
+                        /*
+                         * // Move this to a dialog option to enemy patrols
+                        if (patrol.Party.Owner != Hero.MainHero)
+                        {
+                            if (!patrol.Party.Owner.Clan.IsAtWarWith(Clan.PlayerClan))
+                            {
+                                FactionManager.DeclareWar(Clan.PlayerClan.MapFaction, patrol.Party.Owner.Clan.MapFaction);
+                            }
+                            ChangeRelationAction.ApplyRelationChangeBetweenHeroes(Hero.MainHero, patrol.Party.Owner, -5, false);
+                        }
+                        */
+                        /*
+                         * // Refactor code to keep track of player patrols and AI patrols separately.
+                        if (destroyedParty == Hero.MainHero)
+                        {
+                            if (Settings.Instance.NotifyDestroyedPatrol)
+                            {
+                                InformationManager.DisplayMessage(new InformationMessage(patrol.Name + " has been wiped out by " + destroyerParty.Name, new Color(249 / 255, 113 / 255, 113 / 255)));
+                            }
+                        }
+                        */
+                    }
+                    allPatrols.Remove(destroyedParty);
+                    destroyedParty.RemoveParty();
+                }
+            }
+            catch(Exception e)
+            {
+                MessageBox.Show(e.ToString());
+            }
+        }
+
         public void AiGeneratePatrols()
         {
             PatrolProperties properties;
             foreach (Settlement settlement in Settlement.All)
             {
-                if (settlement.IsVillage && settlement.OwnerClan != Clan.PlayerClan && settlement.Village.Hearth <= 500)
+                if (settlement.IsVillage && settlement.OwnerClan != Clan.PlayerClan && settlement.Village.Hearth <= Settings.Instance.HearthMaximum)
                 {
                     if (settlementPatrolProperties.ContainsKey(settlement.StringId))
                     {
@@ -926,22 +966,13 @@ namespace BuyPatrols
         {
             foreach (Settlement settlement in Settlement.All)
             {
-                if (settlement.IsVillage)
+                if (settlement.IsVillage || settlement.IsCastle)
                 {
                     if (!settlementPatrolProperties.ContainsKey(settlement.StringId))
                     {
                         settlementPatrolProperties.Add(settlement.StringId, new PatrolProperties(settlement.StringId, new List<MobileParty>()));
                     }
                 }
-                
-                if(settlement.IsCastle)
-                {
-                    if (!settlementPatrolProperties.ContainsKey(settlement.StringId))
-                    {
-                        settlementPatrolProperties.Add(settlement.StringId, new PatrolProperties(settlement.StringId, new List<MobileParty>()));
-                    }
-                }
-                
             }
 
         }

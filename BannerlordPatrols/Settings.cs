@@ -33,13 +33,13 @@ namespace BuyPatrols
         [SettingProperty("Patrol Wages Hint Box", hintText: "When enabled, daily patrols wages will be included the clan expenses. When it is disabled, patrol wages will be notified on the bottom left.")]
         [SettingPropertyGroup("Patrol Settings")]
         public bool PatrolWagesHintBox { get; set; } = true;
-        /*
+        
         
         [SettingProperty("Notify Patrol Destroyed", "When enabled, will send a notification on the bottom left when a patrol has been destroyed.")]
         [SettingPropertyGroup("Patrol Settings")]
         public bool NotifyDestroyedPatrol { get; set; } = true;
 
-        
+        /*
         [SettingProperty("Auto Buy on Patrol Destroy", "When enabled, will automatically hire a new medium or small patrol if you have the money.")]
         [SettingPropertyGroup("Patrol Settings")]
         public bool AutoBuyDestroyedPatrol { get; set; } = true;
@@ -50,7 +50,7 @@ namespace BuyPatrols
         public float AddPatrolSpeed { get; set; } = 3.5f;
 
 
-        [SettingProperty("Base Cost to Patrols", 0, 50000, false, hintText: "The base cost to patrols. The total cost of hiring a patrol is a combination of base cost + hearth or base cost + propserity.")]
+        [SettingProperty("Base Cost to Patrols", 0, 50000, false, hintText: "The base cost to patrols. The total cost of hiring a patrol is a combination of base cost + hearth or base cost + prosperity.")]
         [SettingPropertyGroup("Patrol Settings")]
         public int BaseCost { get; set; } = 1250;
 
@@ -60,12 +60,12 @@ namespace BuyPatrols
         public float DailyPatrolWageModifier { get; set; } = 0.75f;
 
 
-        [SettingProperty("Patrols per Village", 1, 10, false, hintText: "Modifies the max amount of patrols per village.")]
+        [SettingProperty("Patrols per Village", 0, 10, false, hintText: "Modifies the max amount of patrols per village.")]
         [SettingPropertyGroup("Patrol Settings")]
         public int MaxPatrolCountPerVillage { get; set; } = 3;
 
 
-        [SettingProperty("Patrols per Castle", 1, 10, false, hintText: "Modifies the max amount of patrols per castle.")]
+        [SettingProperty("Patrols per Castle", 0, 10, false, hintText: "Modifies the max amount of patrols per castle.")]
         [SettingPropertyGroup("Patrol Settings")]
         public int MaxPatrolCountPerCastle { get; set; } = 3;
 
@@ -108,7 +108,7 @@ namespace BuyPatrols
         public bool ForceRegenPatrol { get; set; } = false;
 
 
-        [SettingProperty("Patrol Tether Range", 5, 50, false, hintText: "The maxiumum distance a patrol will go before being pulled back to their home settlement.")]
+        [SettingProperty("Patrol Tether Range", 5, 50, false, hintText: "The maximum distance a patrol will go before being pulled back to their home settlement.")]
         [SettingPropertyGroup("Miscellaneous")]
         public int PatrolTetherRange { get; set; } = 15;
 
@@ -121,9 +121,14 @@ namespace BuyPatrols
         public bool AiHirePatrols { get; set; } = true;
 
 
-        [SettingProperty("Patrol Hiring Chance", 1, 100, false, hintText: "The daily chance that other lords will hire a patrol per village.")]
+        [SettingProperty("Patrol Hiring Chance", 1, 100, false, hintText: "The daily chance that other lords will hire a patrol per village if it is below the hearth limit.")]
         [SettingPropertyGroup("Ai Hiring Settings")]
         public int AiGenerationChance { get; set; } = 5;
+
+
+        [SettingProperty("Hearth Limit", 250, 2000, false, hintText: "If a village's hearth is below this number, the lord will run the chance to spawn a patrol for it.")]
+        [SettingPropertyGroup("Ai Hiring Settings")]
+        public int HearthMaximum { get; set; } = 500;
 
 
         [SettingProperty("Patrol Bonus Speed", 0, 10, false, hintText: "The bonus speed that will be added to AI hired patrols.")]
