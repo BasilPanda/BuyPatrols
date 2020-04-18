@@ -17,7 +17,8 @@ namespace BuyPatrols
     public class BuyPatrols : CampaignBehaviorBase
     {
         Dictionary<string, PatrolProperties> settlementPatrolProperties = new Dictionary<string, PatrolProperties>();
-        List<MobileParty> allPatrols = new List<MobileParty>();
+        List<MobileParty> allPatrols = new List<MobileParty>(); // all Patrols
+        List<MobileParty> playerPatrols = new List<MobileParty>(); // Player Patrols
         Random rand = new Random();
         MobilePartiesAroundPositionList partiesAroundPosition = new MobilePartiesAroundPositionList(32);
         DefaultMapDistanceModel d = new DefaultMapDistanceModel();
@@ -34,11 +35,18 @@ namespace BuyPatrols
         public int PatrolTetherRange = Settings.Instance.PatrolTetherRange;
         public int MaxPatrolCountPerVillage = Settings.Instance.MaxPatrolCountPerVillage;
         public int MaxPatrolCountPerCastle = Settings.Instance.MaxPatrolCountPerCastle;
+        public int MaxPatrolCountPerTown = Settings.Instance.MaxPatrolCountPerTown;
         public int RelationCap = Settings.Instance.RelationCap;
+        public int MaxTotalPatrols = Settings.Instance.MaxTotalPatrols;
+
         #endregion
 
         private void OnSessionLaunched(CampaignGameStarter obj)
         {
+            if (Settings.Instance.NukeAllPatrols)
+            {
+                InformationManager.DisplayMessage(new InformationMessage("BuyPatrols WARNING: DESTROYING ALL PATROLS DAILY OPTION ENABLED.", new Color(255, 0, 0)));
+            }
             TrackPatrols();
             try
             {
@@ -50,7 +58,7 @@ namespace BuyPatrols
             try
             {
                 AddPatrolDialog(obj);
-                AddCastleDialog(obj);
+                AddWalledSettlementDialog(obj);
             } catch (Exception e)
             {
                 MessageBox.Show("Something screwed up in adding patrol dialog. " + e.ToString());
@@ -86,6 +94,7 @@ namespace BuyPatrols
             CampaignEvents.DailyTickEvent.AddNonSerializedListener(this, new Action(this.OnDailyTick));
             CampaignEvents.SettlementEntered.AddNonSerializedListener(this, new Action<MobileParty, Settlement, Hero>(this.OnSettlementEntered));
             CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, new Action<MobileParty, PartyBase>(this.NotifyDestroyedPatrol));
+            CampaignEvents.OnSettlementOwnerChangedEvent.AddNonSerializedListener(this, new Action<Settlement, bool, Hero, Hero, Hero, ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail>(this.OnSettlementOwnerChanged));
             
         }
 
@@ -100,7 +109,7 @@ namespace BuyPatrols
                     {
                         args.optionLeaveType = GameMenuOption.LeaveType.Manage;
                         
-                        if (Settlement.CurrentSettlement.OwnerClan != Clan.PlayerClan && Settings.Instance.MaxPatrolCountPerVillage != 0)
+                        if (Settlement.CurrentSettlement.OwnerClan != Clan.PlayerClan && MaxPatrolCountPerVillage != 0)
                         {
                             return false;
                         }
@@ -112,19 +121,26 @@ namespace BuyPatrols
                 obj.AddGameMenu("basilpatrol_pay_menu", "The {BASILPATROL_SETTLEMENT_TYPE} says they have the manpower but not the gear to " +
                     "send men on patrols. He tells he can send up to {BASILPATROL_MAX_PATROL_AMOUNT} patrols if you are willing to pay their " +
                     "gear. Your clan must own the village to hire patrols. Patrols will switch allegiance to the new clan owner if ownership changes. " +
-                    "Disbanding patrols will only affect patrols that are not engaging an enemy.",
+                    "Disbanding patrols will only affect patrols that are not engaging an enemy. You can have a total of {BASILPATROLS_CAP_PATROLS} in your clan. " +
+                    "You have {BASILPATROLS_CAP_LEFT} patrols you can still hire in your clan.",
                     (MenuCallbackArgs args) =>
                     {
                         if (Settlement.CurrentSettlement.IsVillage)
                         {
                             MBTextManager.SetTextVariable("BASILPATROL_SETTLEMENT_TYPE", "village spokesman", false);
                             MBTextManager.SetTextVariable("BASILPATROL_MAX_PATROL_AMOUNT", MaxPatrolCountPerVillage, false);
+                        } else if(Settlement.CurrentSettlement.IsTown)
+                        {
+                            MBTextManager.SetTextVariable("BASILPATROL_SETTLEMENT_TYPE", "castle sergeant", false);
+                            MBTextManager.SetTextVariable("BASILPATROL_MAX_PATROL_AMOUNT", MaxPatrolCountPerTown, false);
                         }
                         else
                         {
                             MBTextManager.SetTextVariable("BASILPATROL_SETTLEMENT_TYPE", "castle sergeant", false);
                             MBTextManager.SetTextVariable("BASILPATROL_MAX_PATROL_AMOUNT", MaxPatrolCountPerCastle, false);
                         }
+                        MBTextManager.SetTextVariable("BASILPATROLS_CAP_PATROLS", MaxTotalPatrols, false);
+                        MBTextManager.SetTextVariable("BASILPATROLS_CAP_LEFT", (MaxTotalPatrols - playerPatrols.Count).ToString(), false);
                     });
 
                 #region Hiring
@@ -141,22 +157,7 @@ namespace BuyPatrols
                             int cost = BaseCost + patrolProperties.getPatrolCost();
                             MBTextManager.SetTextVariable("BASILPATROL_SMALL_COST", cost, false);
                             MBTextManager.SetTextVariable("GOLD_ICON", "<img src=\"Icons\\Coin@2x\">");
-                            if (Settlement.CurrentSettlement.IsVillage)
-                            {
-                                if (cost > Hero.MainHero.Gold || patrolProperties.getPatrolCount() >= MaxPatrolCountPerVillage || Settlement.CurrentSettlement.OwnerClan != Clan.PlayerClan)
-                                {
-                                    return false;
-                                }
-                                return true;
-                            }
-                            else
-                            {
-                                if (cost > Hero.MainHero.Gold || patrolProperties.getPatrolCount() >= MaxPatrolCountPerCastle || Settlement.CurrentSettlement.OwnerClan != Clan.PlayerClan)
-                                {
-                                    return false;
-                                }
-                                return true;
-                            }
+                            return ConditionalCheckOnSettlementMenuOption(Settlement.CurrentSettlement, cost, patrolProperties);
                         } catch(Exception e)
                         {
                             MessageBox.Show("Error in small button..." + e.ToString());
@@ -198,22 +199,7 @@ namespace BuyPatrols
                             MBTextManager.SetTextVariable("BASILPATROL_MEDIUM_COST", cost, false);
                             MBTextManager.SetTextVariable("GOLD_ICON", "<img src=\"Icons\\Coin@2x\">");
                             //MBTextManager.SetTextVariable("BASILPATROL_COST", patrolProperties.getPatrolCost, false);
-                            if (Settlement.CurrentSettlement.IsVillage)
-                            {
-                                if (cost > Hero.MainHero.Gold || patrolProperties.getPatrolCount() >= MaxPatrolCountPerVillage || Settlement.CurrentSettlement.OwnerClan != Clan.PlayerClan)
-                                {
-                                    return false;
-                                }
-                                return true;
-                            }
-                            else
-                            {
-                                if (cost > Hero.MainHero.Gold || patrolProperties.getPatrolCount() >= MaxPatrolCountPerCastle || Settlement.CurrentSettlement.OwnerClan != Clan.PlayerClan)
-                                {
-                                    return false;
-                                }
-                                return true;
-                            }
+                            return ConditionalCheckOnSettlementMenuOption(Settlement.CurrentSettlement, cost, patrolProperties);
                         } catch (Exception e)
                         {
                             MessageBox.Show("Error in medium button... " + e.ToString());
@@ -255,22 +241,7 @@ namespace BuyPatrols
                             MBTextManager.SetTextVariable("BASILPATROL_LARGE_COST", cost, false);
                             MBTextManager.SetTextVariable("GOLD_ICON", "<img src=\"Icons\\Coin@2x\">");
                             //MBTextManager.SetTextVariable("BASILPATROL_COST", patrolProperties.getPatrolCost, false);
-                            if (Settlement.CurrentSettlement.IsVillage)
-                            {
-                                if (cost > Hero.MainHero.Gold || patrolProperties.getPatrolCount() >= MaxPatrolCountPerVillage || Settlement.CurrentSettlement.OwnerClan != Clan.PlayerClan)
-                                {
-                                    return false;
-                                }
-                                return true;
-                            }
-                            else
-                            {
-                                if (cost > Hero.MainHero.Gold || patrolProperties.getPatrolCount() >= MaxPatrolCountPerCastle || Settlement.CurrentSettlement.OwnerClan != Clan.PlayerClan)
-                                {
-                                    return false;
-                                }
-                                return true;
-                            }
+                            return ConditionalCheckOnSettlementMenuOption(Settlement.CurrentSettlement, cost, patrolProperties);
                         }
                         catch(Exception e)
                         {
@@ -308,7 +279,7 @@ namespace BuyPatrols
                         {
                             args.optionLeaveType = GameMenuOption.LeaveType.Manage;
                             PatrolProperties patrolProperties;
-                            if (Settlement.CurrentSettlement.IsVillage || Settlement.CurrentSettlement.IsCastle)
+                            if (Settlement.CurrentSettlement.IsVillage || Settlement.CurrentSettlement.IsCastle || Settlement.CurrentSettlement.IsTown)
                             {
                                 if (settlementPatrolProperties.TryGetValue(Settlement.CurrentSettlement.StringId, out patrolProperties))
                                 {
@@ -340,9 +311,14 @@ namespace BuyPatrols
                                     {
                                         if (!patrol.IsEngaging)
                                         {
-                                            DisbandPartyAction.ApplyDisband(patrol);
+                                            if (patrol.HomeSettlement.OwnerClan == Clan.PlayerClan)
+                                            {
+                                                playerPatrols.Remove(patrol);
+                                            }
+                                            //DisbandPartyAction.ApplyDisband(patrol);
                                             allPatrols.Remove(patrol);
                                             patrolProperties.patrols.Remove(patrol);
+                                            patrol.RemoveParty();
                                         }
                                     }
                                     settlementPatrolProperties[Settlement.CurrentSettlement.StringId] = patrolProperties;
@@ -357,35 +333,68 @@ namespace BuyPatrols
                         
                     });
 
-                obj.AddGameMenuOption("basilpatrol_pay_menu", "basilpatrol_leave", "Leave", game_menu_just_add_leave_conditional, game_menu_switch_to_village_menu);
+                obj.AddGameMenuOption("basilpatrol_pay_menu", "basilpatrol_leave", "Leave", game_menu_just_add_leave_conditional, game_menu_switch_to_main_menu);
             } catch(Exception e)
             {
                 MessageBox.Show(e.ToString());
             }
         }
 
-        public void AddCastleDialog(CampaignGameStarter obj)
+        public void AddWalledSettlementDialog(CampaignGameStarter obj)
         {
             obj.AddGameMenuOption("castle", "basilpatrol_castle_patrol", "Manage patrols", (MenuCallbackArgs args) =>
             {
                 args.optionLeaveType = GameMenuOption.LeaveType.Manage;
-                if (Settlement.CurrentSettlement.OwnerClan != Clan.PlayerClan && Settings.Instance.MaxPatrolCountPerCastle != 0)
+                if (Settlement.CurrentSettlement.OwnerClan != Clan.PlayerClan && MaxPatrolCountPerCastle != 0)
                 {
                     return false;
                 }
                 return true;
             },
             (MenuCallbackArgs args) => { GameMenu.SwitchToMenu("basilpatrol_pay_menu"); }, false, 4);
+
+            obj.AddGameMenuOption("town_keep", "basilpatrol_town_patrol", "Manage patrols", (MenuCallbackArgs args) =>
+            {
+                args.optionLeaveType = GameMenuOption.LeaveType.Manage;
+                if (Settlement.CurrentSettlement.OwnerClan != Clan.PlayerClan && MaxPatrolCountPerTown != 0)
+                {
+                    return false;
+                }
+                return true;
+            },
+            (MenuCallbackArgs args) => { GameMenu.SwitchToMenu("basilpatrol_pay_menu"); }, false, 6);
         }
 
         public void AddPatrolDialog(CampaignGameStarter obj)
         {
+            #region Player Patrols
+
             obj.AddDialogLine("mod_buypatrols_talk_start", "start", "mod_buypatrols_talk", "Hello my lord. What do you need us to do?", new ConversationSentence.OnConditionDelegate(this.patrol_talk_start_on_conditional), null, 100, null);
             obj.AddPlayerLine("mod_buypatrols_donate_troops", "mod_buypatrols_talk", "mod_buypatrols_after_donate", "Donate Troops", null, new ConversationSentence.OnConsequenceDelegate(this.conversation_patrol_donate_troops_on_consequence), 100, null, null);
             obj.AddPlayerLine("mod_buypatrols_disband", "mod_buypatrols_talk", "close_window", "Disband.", null, new ConversationSentence.OnConsequenceDelegate(this.conversation_patrol_disband_on_consequence), 100, null, null);
             obj.AddPlayerLine("mod_buypatrols_leave", "mod_buypatrols_talk", "close_window", "Carry on, then. Farewell.", null, new ConversationSentence.OnConsequenceDelegate(this.conversation_patrol_leave_on_consequence), 100, null, null);
             obj.AddDialogLine("mod_buypatrols_after_donate", "mod_buypatrols_after_donate", "mod_buypatrols_talk", "Anything else?", null, null, 100, null);
-            obj.AddPlayerLine("mod_leaderless_party_answer", "disbanding_leaderless_party_start_response", "close_window", "Disband now.", null, new ConversationSentence.OnConsequenceDelegate(this.conversation_patrol_disband_now_on_consquence), 100, null, null);
+            obj.AddPlayerLine("mod_leaderless_party_answer", "disbanding_leaderless_party_start_response", "close_window", "Disband now.", null, new ConversationSentence.OnConsequenceDelegate(this.conversation_patrol_disband_now_on_consequence), 100, null, null);
+
+            #endregion
+
+            #region Neutral Patrols
+
+            obj.AddDialogLine("mod_buypatrols_talk_neutral_start", "start", "mod_buypatrols_neutral_talk", "We are patrolling around {BASILPATROL_AREA} under commands of {BASILPATROLS_LIEGE_0}. What do you want?", new ConversationSentence.OnConditionDelegate(this.patrol_talk_neutral_start_conditional), null, 100, null);
+            obj.AddPlayerLine("mod_buypatrols_neutral_attack", "mod_buypatrols_neutral_talk", "mod_buypatrols_neutral_aggresive", "Surrender or die.", null, null, 100, null, null);
+            obj.AddPlayerLine("mod_buypatrols_neutral_leave", "mod_buypatrols_neutral_talk", "close_window", "Nothing just passing by.", null, new ConversationSentence.OnConsequenceDelegate(this.conversation_patrol_leave_on_consequence), 100, null, null);
+            obj.AddDialogLine("mod_buypatrols_talk_neutral_aggro", "mod_buypatrols_neutral_aggresive_response", "mod_buypatrols_neutral_aggresive_player_response", "What? You can't be serious?",null,null,100,null);
+            obj.AddPlayerLine("mod_buypatrols_neutral_aggro_attack", "mod_buypatrols_neutral_aggresive_player_response", "close_window", "I didn't stutter. Surrender or die!", null, new ConversationSentence.OnConsequenceDelegate(this.convo_neutral_war_on_consequence), 100, null, null);
+            obj.AddPlayerLine("mod_buypatrols_neutral_aggro_oops", "mod_buypatrols_neutral_aggresive_player_response", "close_window", "Ah it's a joke. Goodbye!", null, new ConversationSentence.OnConsequenceDelegate(this.conversation_patrol_leave_on_consequence), 100, null, null);
+
+            #endregion
+
+            #region Enemy Patrols
+
+            obj.AddDialogLine("mod_buypatrols_talk_enemy_start", "start", "mod_buypatrols_enemy_talk", "Stop right there! On behalf of my liege, {BASILPATROLS_LIEGE}, you shall be imprisoned.", new ConversationSentence.OnConditionDelegate(this.patrol_talk_enemy_start_conditional), null, 100, null);
+            obj.AddPlayerLine("mod_buypatrols_enemy_leave", "mod_buypatrols_enemy_talk", "close_window", "We can do this the easy way or the hard way.", null, new ConversationSentence.OnConsequenceDelegate(this.conversation_patrol_leave_on_consequence), 100, null, null);
+
+            #endregion
         }
 
         #region Conditionals
@@ -414,7 +423,7 @@ namespace BuyPatrols
             try
             {
                 if (PlayerEncounter.Current != null && Campaign.Current.CurrentConversationContext == ConversationContext.PartyEncounter && 
-                    encounteredParty.IsMobile && encounteredParty.Name.Contains("Patrol") && encounteredParty.IsActive && encounteredParty.MobileParty.HomeSettlement.OwnerClan == Clan.PlayerClan)
+                    encounteredParty.IsMobile && encounteredParty.Name.ToString().EndsWith("Patrol") && encounteredParty.IsActive && encounteredParty.MobileParty.HomeSettlement.OwnerClan == Clan.PlayerClan)
                 {
                     return true;
                 }
@@ -428,16 +437,47 @@ namespace BuyPatrols
             
         }
 
+        private bool patrol_talk_enemy_start_conditional()
+        {
+            PartyBase encounteredParty = PlayerEncounter.EncounteredParty;
+            if (PlayerEncounter.Current != null && Campaign.Current.CurrentConversationContext == ConversationContext.PartyEncounter &&
+                    encounteredParty.IsMobile && encounteredParty.Name.ToString().EndsWith("Patrol") && encounteredParty.IsActive && encounteredParty.MobileParty.HomeSettlement.OwnerClan.IsAtWarWith(Clan.PlayerClan))
+            {
+                MBTextManager.SetTextVariable("BASILPATROLS_LIEGE", encounteredParty.MobileParty.HomeSettlement.OwnerClan.Leader);
+                return true;
+            }
+            return false;
+        }
+
+        private bool patrol_talk_neutral_start_conditional()
+        {
+            PartyBase encounteredParty = PlayerEncounter.EncounteredParty;
+            if (PlayerEncounter.Current != null && Campaign.Current.CurrentConversationContext == ConversationContext.PartyEncounter &&
+                    encounteredParty.IsMobile && encounteredParty.Name.ToString().EndsWith("Patrol") && encounteredParty.IsActive && !encounteredParty.MobileParty.HomeSettlement.OwnerClan.IsAtWarWith(Clan.PlayerClan)
+                    && encounteredParty.MobileParty.HomeSettlement.OwnerClan != Clan.PlayerClan)
+            {
+                MBTextManager.SetTextVariable("BASILPATROL_AREA", encounteredParty.MobileParty.HomeSettlement);
+                MBTextManager.SetTextVariable("BASILPATROLS_LIEGE_0", encounteredParty.MobileParty.HomeSettlement.OwnerClan.Leader);
+                return true;
+            }
+            return false;
+        }
+
         #endregion
 
         #region Consequences
 
-        private void game_menu_switch_to_village_menu(MenuCallbackArgs args)
+        private void game_menu_switch_to_main_menu(MenuCallbackArgs args)
         {
             if(Settlement.CurrentSettlement.IsVillage) 
             {
                 GameMenu.SwitchToMenu("village");
-            }else
+            }
+            else if (Settlement.CurrentSettlement.IsTown)
+            {
+                GameMenu.SwitchToMenu("town_keep");
+            }
+            else
             {
                 GameMenu.SwitchToMenu("castle");
             }
@@ -466,10 +506,22 @@ namespace BuyPatrols
             PartyScreenManager.OpenScreenAsDonateTroops(encounteredParty.MobileParty);
         }
 
-        private void conversation_patrol_disband_now_on_consquence()
+        private void conversation_patrol_disband_now_on_consequence()
         {
             PartyBase encounteredParty = PlayerEncounter.EncounteredParty;
             encounteredParty.MobileParty.RemoveParty();
+            PlayerEncounter.LeaveEncounter = true;
+        }
+
+        private void convo_neutral_war_on_consequence()
+        {
+            PartyBase encounteredParty = PlayerEncounter.EncounteredParty;
+            if (encounteredParty.Name.ToString().EndsWith("Patrol") && encounteredParty.IsActive && !encounteredParty.MobileParty.HomeSettlement.OwnerClan.IsAtWarWith(Clan.PlayerClan)
+                    && encounteredParty.MobileParty.HomeSettlement.OwnerClan != Clan.PlayerClan)
+            {
+                DeclareWarAction.Apply(Clan.PlayerClan, encounteredParty.MobileParty.HomeSettlement.OwnerClan);
+                ChangeRelationAction.ApplyPlayerRelation(encounteredParty.MobileParty.HomeSettlement.OwnerClan.Leader, -5, true, true);
+            }
             PlayerEncounter.LeaveEncounter = true;
         }
 
@@ -524,33 +576,6 @@ namespace BuyPatrols
             GenerateFood(patrolParty);
         }
 
-        /* Saved for another time
-        private void NotifyDestroyedPatrol(MobileParty arg1, PartyBase arg2)
-        {
-            if(arg1.Name.Contains("Patrol"))
-            {
-                if (Settings.Instance.NotifyDestroyedPatrol)
-                {
-                    InformationManager.DisplayMessage(new InformationMessage(arg1.HomeSettlement.ToString() + " has lost a patrol."));
-                }
-                if (Settings.Instance.AutoBuyDestroyedPatrol && arg1.HomeSettlement.OwnerClan == Clan.PlayerClan) // Autobuy
-                {
-                    PatrolProperties properties;
-                    settlementPatrolProperties.TryGetValue(arg1.HomeSettlement.StringId, out properties);
-                    int cost = (BaseCost + properties.getPatrolCost()) * 2;
-                    if (AttemptAddPatrolToDictionary(arg1.HomeSettlement, properties, cost, 2))
-                    {
-                        InformationManager.DisplayMessage(new InformationMessage(arg1.HomeSettlement.ToString() + " has auto bought a medium patrol."));
-                    }
-                    else if (AttemptAddPatrolToDictionary(arg1.HomeSettlement, properties, cost / 2))
-                    {
-                        InformationManager.DisplayMessage(new InformationMessage(arg1.HomeSettlement.ToString() + " has auto bought a small patrol."));
-                    }
-                }
-            }
-        }
-        */
-
         private bool AttemptAddPatrolToDictionary(Settlement currentSettlement, PatrolProperties properties, int cost, int multiplier = 1)
         {
             if(cost <= Hero.MainHero.Gold)
@@ -559,6 +584,10 @@ namespace BuyPatrols
                 MobileParty party = spawnPatrol(Settlement.CurrentSettlement, TroopsPerPatrol * multiplier);
                 properties.patrols.Add(party);
                 settlementPatrolProperties[currentSettlement.StringId] = properties;
+                if (currentSettlement.OwnerClan == Clan.PlayerClan)
+                {
+                    playerPatrols.Add(party);
+                }
                 allPatrols.Add(party);
                 return true;
             }
@@ -579,7 +608,7 @@ namespace BuyPatrols
                 {
                     settlementPatrolProperties.TryGetValue(settlement.StringId, out patrolProperties);
                     patrolProperties.patrols.RemoveAll(x => x.MemberRoster.IsEmpty());
-                    //allPatrols.Clear();
+                    allPatrols.RemoveAll(x => x.MemberRoster.IsEmpty());
                     bool flag = true;
                     foreach (MobileParty patrol in patrolProperties.patrols.ToList())
                     {
@@ -610,6 +639,9 @@ namespace BuyPatrols
                                 else if (d.GetDistance(patrol, patrol.HomeSettlement) > PatrolTetherRange)
                                 {
                                     patrol.SetMoveGoToPoint(patrol.HomeSettlement.GatePosition);
+                                } else if(patrol.TargetParty == MobileParty.MainParty && patrol.HomeSettlement.OwnerClan == Clan.PlayerClan)
+                                {
+                                    patrol.SetMovePatrolAroundSettlement(patrol.HomeSettlement);
                                 }
 
                             }
@@ -680,7 +712,7 @@ namespace BuyPatrols
                 {
                     settlementPatrolProperties.TryGetValue(settlement.StringId, out patrolProperties);
                     patrolProperties.patrols.RemoveAll(x => x.MemberRoster.IsEmpty());
-                    //allPatrols.Clear();
+                    allPatrols.RemoveAll(x => x.MemberRoster.IsEmpty());
 
                     foreach (MobileParty patrol in patrolProperties.patrols.ToList())
                     {
@@ -779,7 +811,7 @@ namespace BuyPatrols
 
         public void OnSettlementEntered(MobileParty mobileParty, Settlement settlement, Hero hero) 
         {
-            if(mobileParty != null && mobileParty.IsActive && mobileParty.Name.Contains("Patrol"))
+            if(mobileParty != null && mobileParty.IsActive && mobileParty.Name.ToString().EndsWith("Patrol"))
             {
                 //InformationManager.DisplayMessage(new InformationMessage(new TextObject("Patrol entered " + settlement.Name, null).ToString()));
                 if (settlement.IsTown || settlement.IsCastle)
@@ -840,7 +872,7 @@ namespace BuyPatrols
         {
             foreach(MobileParty party in MobileParty.All.ToList())
             {
-                if (party.Name.Contains("Patrol") && CheckUnknownBehavior(party))
+                if (party.Name.ToString().EndsWith("Patrol") && CheckUnknownBehavior(party))
                 {
                     party.RemoveParty();
                 }
@@ -880,6 +912,33 @@ namespace BuyPatrols
             InformationManager.DisplayMessage(new InformationMessage("There are " + remaining + " patrols remaining and are currently in engagement.", Colors.Cyan));
         }
 
+        public bool ConditionalCheckOnSettlementMenuOption(Settlement settlement, int cost, PatrolProperties patrolProperties)
+        {
+            if (Settlement.CurrentSettlement.IsVillage)
+            {
+                if (cost > Hero.MainHero.Gold || patrolProperties.getPatrolCount() >= MaxPatrolCountPerVillage || Settlement.CurrentSettlement.OwnerClan != Clan.PlayerClan || playerPatrols.Count >= MaxTotalPatrols)
+                {
+                    return false;
+                }
+                return true;
+            }
+            else if (Settlement.CurrentSettlement.IsTown)
+            {
+                if (cost > Hero.MainHero.Gold || patrolProperties.getPatrolCount() >= MaxPatrolCountPerTown || Settlement.CurrentSettlement.OwnerClan != Clan.PlayerClan || playerPatrols.Count >= MaxTotalPatrols)
+                {
+                    return false;
+                }
+                return true;
+            }
+            else
+            {
+                if (cost > Hero.MainHero.Gold || patrolProperties.getPatrolCount() >= MaxPatrolCountPerCastle || Settlement.CurrentSettlement.OwnerClan != Clan.PlayerClan || playerPatrols.Count >= MaxTotalPatrols)
+                {
+                    return false;
+                }
+                return true;
+            }
+        }
         #endregion
 
         private void NotifyDestroyedPatrol(MobileParty destroyedParty, PartyBase destroyerParty)
@@ -888,30 +947,14 @@ namespace BuyPatrols
             {
                 if (destroyedParty != null && destroyedParty.Name.ToString().EndsWith("Patrol"))
                 {
-                    MobileParty patrol = allPatrols.FirstOrDefault(x => x == destroyedParty);
+                    MobileParty patrol = playerPatrols.FirstOrDefault(x => x == destroyedParty);
                     if (patrol != null)
                     {
-                        /*
-                         * // Move this to a dialog option to enemy patrols
-                        if (patrol.Party.Owner != Hero.MainHero)
+                        if (Settings.Instance.NotifyDestroyedPatrol)
                         {
-                            if (!patrol.Party.Owner.Clan.IsAtWarWith(Clan.PlayerClan))
-                            {
-                                FactionManager.DeclareWar(Clan.PlayerClan.MapFaction, patrol.Party.Owner.Clan.MapFaction);
-                            }
-                            ChangeRelationAction.ApplyRelationChangeBetweenHeroes(Hero.MainHero, patrol.Party.Owner, -5, false);
+                            InformationManager.DisplayMessage(new InformationMessage(patrol.Name + " has been wiped out by " + destroyerParty.Name, new Color(255 / 255, 128 / 255, 0)));
                         }
-                        */
-                        /*
-                         * // Refactor code to keep track of player patrols and AI patrols separately.
-                        if (destroyedParty == Hero.MainHero)
-                        {
-                            if (Settings.Instance.NotifyDestroyedPatrol)
-                            {
-                                InformationManager.DisplayMessage(new InformationMessage(patrol.Name + " has been wiped out by " + destroyerParty.Name, new Color(249 / 255, 113 / 255, 113 / 255)));
-                            }
-                        }
-                        */
+                        playerPatrols.Remove(patrol);
                     }
                     allPatrols.Remove(destroyedParty);
                     destroyedParty.RemoveParty();
@@ -966,7 +1009,7 @@ namespace BuyPatrols
         {
             foreach (Settlement settlement in Settlement.All)
             {
-                if (settlement.IsVillage || settlement.IsCastle)
+                if (settlement.IsVillage || settlement.IsCastle || settlement.IsTown)
                 {
                     if (!settlementPatrolProperties.ContainsKey(settlement.StringId))
                     {
@@ -977,10 +1020,25 @@ namespace BuyPatrols
 
         }
         
+        private void OnSettlementOwnerChanged(Settlement settlement, bool openToClaim, Hero newOwner, Hero oldOwner, Hero capturerHero, ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail detail)
+        {
+            if(settlementPatrolProperties.ContainsKey(settlement.StringId))
+            {
+                PatrolProperties props;
+                settlementPatrolProperties.TryGetValue(settlement.StringId, out props);
+                foreach(MobileParty patrol in props.patrols)
+                {
+                    patrol.Party.Owner = newOwner;
+                }
+                settlementPatrolProperties[settlement.StringId] = props;
+            }
+        }
+
         public override void SyncData(IDataStore dataStore)
         {
             dataStore.SyncData("settlementPatrolProperties", ref settlementPatrolProperties);
             dataStore.SyncData("allPatrols", ref allPatrols);
+            dataStore.SyncData("playerPatrols", ref playerPatrols);
         }
         
         public class BannerlordPatrolSaveDefiner : SaveableTypeDefiner

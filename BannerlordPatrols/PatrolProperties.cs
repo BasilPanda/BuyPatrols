@@ -36,7 +36,16 @@ namespace BuyPatrols
 
         public int getPatrolCost()
         {
-                return getProsperity() / 2 == 0 ? (int)getSettlement().Village.Hearth * 3: getProsperity() * 2;
+            if (getSettlement().IsVillage)
+            {
+                return (int)getSettlement().Village.Hearth * 3;
+            } else if (getSettlement().IsCastle)
+            {
+                return getProsperity() * 2;
+            } else
+            {
+                return getProsperity();
+            }
         }
     }
 }

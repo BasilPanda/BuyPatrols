@@ -35,39 +35,48 @@ namespace BuyPatrols
         public bool PatrolWagesHintBox { get; set; } = true;
         
         
-        [SettingProperty("Notify Patrol Destroyed", "When enabled, will send a notification on the bottom left when a patrol has been destroyed.")]
+        [SettingProperty("Notify Patrol Destroyed", "When enabled, will send a notification on the bottom left when a patrol has been destroyed. Only applies for new patrols.")]
         [SettingPropertyGroup("Patrol Settings")]
         public bool NotifyDestroyedPatrol { get; set; } = true;
 
-        /*
+        /* for now impossible
         [SettingProperty("Auto Buy on Patrol Destroy", "When enabled, will automatically hire a new medium or small patrol if you have the money.")]
         [SettingPropertyGroup("Patrol Settings")]
         public bool AutoBuyDestroyedPatrol { get; set; } = true;
         */
 
-        [SettingProperty("Personal Patrol Bonus Speed", 0, 10, false, hintText: "The bonus speed that will be added to patrols within your clan.")]
+        [SettingProperty("Personal Patrol Bonus Speed", 0, 10, true, hintText: "The bonus speed that will be added to patrols within your clan.")]
         [SettingPropertyGroup("Patrol Settings")]
         public float AddPatrolSpeed { get; set; } = 3.5f;
 
 
-        [SettingProperty("Base Cost to Patrols", 0, 50000, false, hintText: "The base cost to patrols. The total cost of hiring a patrol is a combination of base cost + hearth or base cost + prosperity.")]
+        [SettingProperty("Base Cost to Patrols", 0, 50000, true, hintText: "The base cost to patrols. The total cost of hiring a patrol is a combination of base cost + hearth or base cost + prosperity.")]
         [SettingPropertyGroup("Patrol Settings")]
         public int BaseCost { get; set; } = 1250;
 
 
-        [SettingProperty("Patrol Wage Modifier", 0, 4, false, hintText: "Modifies the daily wage amount. 0 makes it so there are no patrol wages to pay.")]
+        [SettingProperty("Patrol Wage Modifier", 0, 4, true, hintText: "Modifies the daily wage amount. 0 makes it so there are no patrol wages to pay.")]
         [SettingPropertyGroup("Patrol Settings")]
         public float DailyPatrolWageModifier { get; set; } = 0.75f;
 
 
-        [SettingProperty("Patrols per Village", 0, 10, false, hintText: "Modifies the max amount of patrols per village.")]
+        [SettingProperty("Max Total Patrols", 0, 255, true, hintText: "Modifies the max amount of patrols that players can have at one time. The more patrols in your map can cause unforeseen bugs and issues.")]
+        [SettingPropertyGroup("Patrol Settings")]
+        public int MaxTotalPatrols { get; set; } = 12;
+
+
+        [SettingProperty("Patrols per Village", 0, 10, true, hintText: "Modifies the max amount of patrols per village.")]
         [SettingPropertyGroup("Patrol Settings")]
         public int MaxPatrolCountPerVillage { get; set; } = 3;
 
 
-        [SettingProperty("Patrols per Castle", 0, 10, false, hintText: "Modifies the max amount of patrols per castle.")]
+        [SettingProperty("Patrols per Castle", 0, 10, true, hintText: "Modifies the max amount of patrols per castle.")]
         [SettingPropertyGroup("Patrol Settings")]
         public int MaxPatrolCountPerCastle { get; set; } = 3;
+
+        [SettingProperty("Patrols per Town", 0, 10, true, hintText: "Modifies the max amount of patrols per town.")]
+        [SettingPropertyGroup("Patrol Settings")]
+        public int MaxPatrolCountPerTown{ get; set; } = 1;
 
 
         [SettingProperty("Base Patrol Size", 4, 64, false, hintText: "Modifies the base average men per patrol. This affects all sizes. Medium is 2x and large is 3x this number")]
@@ -116,7 +125,7 @@ namespace BuyPatrols
 
         #region Lord Patrols
 
-        [SettingProperty("Other Lords Hire", hintText: "When enabled, other lords will try to hire patrols for their villages.")]
+        [SettingProperty("Other Lords Hire", false, hintText: "When enabled, other lords will try to hire patrols for their villages.")]
         [SettingPropertyGroup("Ai Hiring Settings")]
         public bool AiHirePatrols { get; set; } = true;
 

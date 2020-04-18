@@ -16,7 +16,7 @@ namespace BuyPatrols
         {
             foreach (MobileParty mobileParty in MilitiasCampaignBehavior.MilitiaParties)
             {
-                if (mobileParty.IsActive && !mobileParty.Name.Contains("Patrol"))
+                if (mobileParty.IsActive && !mobileParty.Name.ToString().EndsWith("Patrol"))
                 {
                     CheckProvocation(mobileParty);
                     if (mobileParty.MapEvent == null && mobileParty.CurrentSettlement == null && mobileParty.HomeSettlement.GetComponent<Town>() != null)
