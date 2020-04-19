@@ -145,7 +145,7 @@ namespace BuyPatrols
         public float AddPatrolSpeedForAi { get; set; } = 0.5f;
 
 
-        [SettingProperty("Max Patrols Per Settlement", 1, 10, false, hintText: "The maximum amount of patrols the AI will hire per settlement.")]
+        [SettingProperty("Max Patrols Per Settlement", 0, 10, false, hintText: "The maximum amount of patrols the AI will hire per settlement.")]
         [SettingPropertyGroup("Ai Hiring Settings")]
         public int AiMaxPatrolPerSettlement { get; set; } = 1;
         #endregion

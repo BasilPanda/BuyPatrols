@@ -367,7 +367,7 @@ namespace BuyPatrols
                 }
                 return true;
             },
-            (MenuCallbackArgs args) => { GameMenu.SwitchToMenu("basilpatrol_pay_menu"); }, false, 6);
+            (MenuCallbackArgs args) => { GameMenu.SwitchToMenu("basilpatrol_pay_menu"); }, false, 5);
         }
 
         public void AddPatrolDialog(CampaignGameStarter obj)

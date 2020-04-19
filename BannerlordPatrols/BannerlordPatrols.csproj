@@ -56,9 +56,6 @@
     <Reference Include="MBOptionScreen, Version=1.1.14.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Bannerlord.MBOptionScreen.1.1.14\lib\net472\MBOptionScreen.dll</HintPath>
     </Reference>
-    <Reference Include="ModLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Bannerlord.MBOptionScreen.1.1.14\lib\net472\ModLib.dll</HintPath>
-    </Reference>
     <Reference Include="SandBox">
       <HintPath>F:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\SandBox\bin\Win64_Shipping_Client\SandBox.dll</HintPath>
       <Private>False</Private>
@@ -312,6 +309,7 @@
     <Content Include="XML\std_buypatrols.xml" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="changelog.md" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
