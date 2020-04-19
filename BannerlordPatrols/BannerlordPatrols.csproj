@@ -305,6 +305,7 @@
     <Compile Include="Settings.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="SubModule.xml" />
     <Content Include="XML\std_buypatrols.xml" />
   </ItemGroup>
   <ItemGroup>
