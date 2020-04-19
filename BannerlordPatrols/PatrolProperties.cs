@@ -44,7 +44,7 @@ namespace BuyPatrols
                 return getProsperity() * 2;
             } else
             {
-                return getProsperity();
+                return getProsperity() / 2;
             }
         }
     }
