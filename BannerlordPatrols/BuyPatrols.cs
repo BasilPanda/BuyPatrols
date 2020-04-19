@@ -95,7 +95,6 @@ namespace BuyPatrols
             CampaignEvents.SettlementEntered.AddNonSerializedListener(this, new Action<MobileParty, Settlement, Hero>(this.OnSettlementEntered));
             CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, new Action<MobileParty, PartyBase>(this.NotifyDestroyedPatrol));
             CampaignEvents.OnSettlementOwnerChangedEvent.AddNonSerializedListener(this, new Action<Settlement, bool, Hero, Hero, Hero, ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail>(this.OnSettlementOwnerChanged));
-            
         }
 
         #region Dialog & Menus Stuff
@@ -547,9 +546,8 @@ namespace BuyPatrols
             TextObject textObject;
             textObject = new TextObject("{BASILPATROL_SETTLEMENT_NAME} Patrol", null);
             textObject.SetTextVariable("BASILPATROL_SETTLEMENT_NAME", settlement.Name);
-            mobileParty.InitializeMobileParty(textObject, partyTemplate, settlement.GatePosition, 0, 0, 0, rand.Next((int)(amount*0.9), (int)Math.Ceiling((amount + 1)*1.1)));
+            mobileParty.InitializeMobileParty(textObject, partyTemplate, settlement.GatePosition, 2, 0, 0, rand.Next((int)(amount*0.9), (int)Math.Ceiling((amount + 1)*1.1)));
             InitPatrolParty(mobileParty, textObject, settlement.OwnerClan, settlement);
-            mobileParty.Aggressiveness = 1f;
             mobileParty.SetMovePatrolAroundSettlement(settlement);
             return mobileParty;
         }
@@ -560,13 +558,11 @@ namespace BuyPatrols
             int numberOfCreated = partyTemplate.NumberOfCreated;
             partyTemplate.IncrementNumberOfCreated();
             MobileParty mobileParty = MBObjectManager.Instance.CreateObject<MobileParty>(clan.StringId + "_" + numberOfCreated);
-
             TextObject textObject;
             textObject = new TextObject("{BASILPATROL_SETTLEMENT_NAME} Patrol", null);
             textObject.SetTextVariable("BASILPATROL_SETTLEMENT_NAME", settlement.Name);
-            mobileParty.InitializeMobileParty(textObject, partyTemplate, settlement.GatePosition, 0, 0, 0, rand.Next((int)(amount * 0.9), (int)Math.Ceiling((amount + 1) * 1.1)));
+            mobileParty.InitializeMobileParty(textObject, partyTemplate, settlement.GatePosition, 2, 0, 0, rand.Next((int)(amount * 0.9), (int)Math.Ceiling((amount + 1) * 1.1)));
             InitPatrolParty(mobileParty, textObject, clan, settlement);
-            mobileParty.Aggressiveness = 1f;
             mobileParty.SetMovePatrolAroundSettlement(settlement);
             return mobileParty;
         }
@@ -577,7 +573,7 @@ namespace BuyPatrols
             patrolParty.IsMilitia = true;
             patrolParty.HomeSettlement = homeSettlement;
             patrolParty.Party.Owner = faction.Leader;
-            patrolParty.SetInititave(1f, 0f, 100000000f);
+            patrolParty.SetInititave(0f, 0.5f, float.MaxValue);
             patrolParty.Party.Visuals.SetMapIconAsDirty();
             GenerateFood(patrolParty);
         }
@@ -610,7 +606,7 @@ namespace BuyPatrols
             PatrolProperties patrolProperties;
             foreach(Settlement settlement in Settlement.All)
             {
-                if (settlement.IsVillage || settlement.IsCastle)
+                if (settlement.IsVillage || settlement.IsCastle || settlement.IsTown)
                 {
                     settlementPatrolProperties.TryGetValue(settlement.StringId, out patrolProperties);
                     patrolProperties.patrols.RemoveAll(x => x.MemberRoster.IsEmpty());
@@ -618,6 +614,7 @@ namespace BuyPatrols
                     bool flag = true;
                     foreach (MobileParty patrol in patrolProperties.patrols.ToList())
                     {
+                        patrol.Aggressiveness = 0;
                         flag = true;
                         // Unknown Behavior Potential Fix
                         if(CheckUnknownBehavior(patrol))
@@ -653,7 +650,7 @@ namespace BuyPatrols
                                 }
                                 else if (patrol.TargetParty != null)
                                 {
-                                    if (!patrol.HomeSettlement.OwnerClan.IsAtWarWith(patrol.TargetParty.HomeSettlement.OwnerClan))
+                                    if (!patrol.MapFaction.IsAtWarWith(patrol.TargetParty.MapFaction))
                                     {
                                         patrol.SetMovePatrolAroundSettlement(patrol.HomeSettlement);
                                     }
@@ -691,7 +688,7 @@ namespace BuyPatrols
                                 {
                                     continue;
                                 }
-                                if(patrol.Party.TotalStrength > possibleEnemy.Party.TotalStrength && possibleEnemy.Party.NumberOfAllMembers != 0)
+                                else if(patrol.Party.TotalStrength * 1.1 > possibleEnemy.Party.TotalStrength && possibleEnemy.Party.NumberOfHealthyMembers != 0)
                                 {
                                     patrol.SetMoveEngageParty(possibleEnemy);
                                     flag = false;
@@ -973,7 +970,7 @@ namespace BuyPatrols
                         {
                             TextObject text = new TextObject("{=BUYPATROLSNOTIFY}{PATROLNAME} has been wiped out by {DESTROYERNAME}.");
                             text.SetTextVariable("PATROLNAME", patrol.Name);
-                            text.SetTextVariable("DESTROYERNAME", destroyedParty.Name);
+                            text.SetTextVariable("DESTROYERNAME", destroyerParty.Name);
                             InformationManager.DisplayMessage(new InformationMessage(text.ToString(), new Color(255 / 255, 128 / 255, 0)));
                         }
                         playerPatrols.Remove(patrol);

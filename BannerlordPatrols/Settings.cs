@@ -11,16 +11,16 @@ namespace BuyPatrols
 
         #region Main Settings
 
-        [SettingProperty("REMOVE ALL PATROLS", hintText: "When enabled, will attempt to delete ALL patrols that aren't engaging a party. This might take several days. Will notify the number of patrols left and destroyed.")]
+        [SettingProperty("REMOVE ALL PATROLS", false, hintText: "When enabled, will attempt to delete ALL patrols that aren't engaging a party. This might take several days. Will notify the number of patrols left and destroyed.")]
         [SettingPropertyGroup(" Removal Settings")]
         public bool NukeAllPatrols { get; set; } = false;
 
-        [SettingProperty("Target Caravans", hintText: "When enabled, patrols will target caravans.")]
+        [SettingProperty("Target Caravans", false, hintText: "When enabled, patrols will target caravans.")]
         [SettingPropertyGroup("Patrol Settings")]
         public bool TargetCaravans { get; set; } = false;
 
 
-        [SettingProperty("Target Villagers", hintText: "When enabled, patrols will target villagers.")]
+        [SettingProperty("Target Villagers", false, hintText: "When enabled, patrols will target villagers.")]
         [SettingPropertyGroup("Patrol Settings")]
         public bool TargetVillagers { get; set; } = false;
 
@@ -45,36 +45,36 @@ namespace BuyPatrols
         public bool AutoBuyDestroyedPatrol { get; set; } = true;
         */
 
-        [SettingProperty("Personal Patrol Bonus Speed", 0, 10, true, hintText: "The bonus speed that will be added to patrols within your clan.")]
+        [SettingProperty("Personal Patrol Bonus Speed", 0, 10, false, hintText: "The bonus speed that will be added to patrols within your clan.")]
         [SettingPropertyGroup("Patrol Settings")]
         public float AddPatrolSpeed { get; set; } = 3.5f;
 
 
-        [SettingProperty("Base Cost to Patrols", 0, 50000, true, hintText: "The base cost to patrols. The total cost of hiring a patrol is a combination of base cost + hearth or base cost + prosperity.")]
+        [SettingProperty("Base Cost to Patrols", 0, 50000, false, hintText: "The base cost to patrols. The total cost of hiring a patrol is a combination of base cost + hearth or base cost + prosperity.")]
         [SettingPropertyGroup("Patrol Settings")]
         public int BaseCost { get; set; } = 1250;
 
 
-        [SettingProperty("Patrol Wage Modifier", 0, 4, true, hintText: "Modifies the daily wage amount. 0 makes it so there are no patrol wages to pay.")]
+        [SettingProperty("Patrol Wage Modifier", 0, 4, false, hintText: "Modifies the daily wage amount. 0 makes it so there are no patrol wages to pay.")]
         [SettingPropertyGroup("Patrol Settings")]
         public float DailyPatrolWageModifier { get; set; } = 0.75f;
 
 
-        [SettingProperty("Max Total Patrols", 0, 255, true, hintText: "Modifies the max amount of patrols that players can have at one time. The more patrols in your map can cause unforeseen bugs and issues.")]
+        [SettingProperty("Max Total Patrols", 0, 255, false, hintText: "Modifies the max amount of patrols that players can have at one time. The more patrols in your map can cause unforeseen bugs and issues.")]
         [SettingPropertyGroup("Patrol Settings")]
         public int MaxTotalPatrols { get; set; } = 12;
 
 
-        [SettingProperty("Patrols per Village", 0, 10, true, hintText: "Modifies the max amount of patrols per village.")]
+        [SettingProperty("Patrols per Village", 0, 10, false, hintText: "Modifies the max amount of patrols per village.")]
         [SettingPropertyGroup("Patrol Settings")]
         public int MaxPatrolCountPerVillage { get; set; } = 3;
 
 
-        [SettingProperty("Patrols per Castle", 0, 10, true, hintText: "Modifies the max amount of patrols per castle.")]
+        [SettingProperty("Patrols per Castle", 0, 10, false, hintText: "Modifies the max amount of patrols per castle.")]
         [SettingPropertyGroup("Patrol Settings")]
         public int MaxPatrolCountPerCastle { get; set; } = 3;
 
-        [SettingProperty("Patrols per Town", 0, 10, true, hintText: "Modifies the max amount of patrols per town.")]
+        [SettingProperty("Patrols per Town", 0, 10, false, hintText: "Modifies the max amount of patrols per town.")]
         [SettingPropertyGroup("Patrol Settings")]
         public int MaxPatrolCountPerTown{ get; set; } = 1;
 
@@ -88,12 +88,12 @@ namespace BuyPatrols
         #region Relation Settings
 
 
-        [SettingProperty("Allow Relation Gain", hintText: "When enabled, a daily 10% chance to gain relation with notables that have patrols.")]
+        [SettingProperty("Allow Relation Gain", false, hintText: "When enabled, a daily 10% chance to gain relation with notables that have patrols.")]
         [SettingPropertyGroup("Relation Settings")]
         public bool IncreaseNotableRelations { get; set; } = true;
 
 
-        [SettingProperty("Notify Relation Change", hintText: "When enabled, will send a notification on each relation change due to having patrols.")]
+        [SettingProperty("Notify Relation Change", false, hintText: "When enabled, will send a notification on each relation change due to having patrols.")]
         [SettingPropertyGroup("Relation Settings")]
         public bool NotifyNotableRelations { get; set; } = false;
 
