@@ -645,14 +645,19 @@ namespace BuyPatrols
                                 else if (d.GetDistance(patrol, patrol.HomeSettlement) > PatrolTetherRange)
                                 {
                                     patrol.SetMoveGoToPoint(patrol.HomeSettlement.GatePosition);
-                                } else if(patrol.TargetParty == MobileParty.MainParty && patrol.HomeSettlement.OwnerClan == Clan.PlayerClan)
+                                }
+                                else if (patrol.TargetParty == MobileParty.MainParty && patrol.HomeSettlement.OwnerClan == Clan.PlayerClan)
                                 {
                                     patrol.Party.Owner = Hero.MainHero;
                                     patrol.SetMovePatrolAroundSettlement(patrol.HomeSettlement);
-                                } else if (!patrol.HomeSettlement.OwnerClan.IsAtWarWith(patrol.TargetParty.HomeSettlement.OwnerClan))
-                                {
-                                    patrol.SetMovePatrolAroundSettlement(patrol.HomeSettlement);
                                 }
+                                else if (patrol.TargetParty != null)
+                                {
+                                    if (!patrol.HomeSettlement.OwnerClan.IsAtWarWith(patrol.TargetParty.HomeSettlement.OwnerClan))
+                                    {
+                                        patrol.SetMovePatrolAroundSettlement(patrol.HomeSettlement);
+                                    }
+                                } 
 
                             }
                             if(patrol.IsGoingToSettlement && closestTown == null)

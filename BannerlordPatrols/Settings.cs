@@ -5,7 +5,7 @@ namespace BuyPatrols
 {
     public class Settings : AttributeSettings<Settings>
     {
-        public override string Id { get; set; } = "BuyPatrolsSettings_v1";
+        public override string Id { get; set; } = "BuyPatrolsSettings_v2";
         public override string ModName => "Buy Patrols";
         public override string ModuleFolderName => "zzzBuyPatrols";
 
@@ -35,7 +35,7 @@ namespace BuyPatrols
         public bool PatrolWagesHintBox { get; set; } = true;
         
         
-        [SettingProperty("Notify Patrol Destroyed", "When enabled, will send a notification on the bottom left when a patrol has been destroyed. Only applies for new patrols.")]
+        [SettingProperty("Notify Patrol Destroyed", hintText:"When enabled, will send a notification on the bottom left when a patrol has been destroyed. Only applies for new patrols.")]
         [SettingPropertyGroup("Patrol Settings")]
         public bool NotifyDestroyedPatrol { get; set; } = true;
 
