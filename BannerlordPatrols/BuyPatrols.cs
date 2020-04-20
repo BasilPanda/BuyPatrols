@@ -832,12 +832,9 @@ namespace BuyPatrols
                     {
                         TroopRosterElement prisoner = mobileParty.PrisonRoster.GetElementCopyAtIndex(i);
                         int woundedNumber = prisoner.WoundedNumber;
-                        if (prisoner.Character.IsHero)
-                        {
-                            EnterSettlementAction.ApplyForPrisoner(prisoner.Character.HeroObject, settlement);
-                        }
-                        settlement.Party.PrisonRoster.AddToCounts(prisoner.Character,  prisoner.Number, false, woundedNumber, 0, true, -1);
+                        settlement.Party.PrisonRoster.AddToCounts(prisoner.Character, prisoner.Number, false, woundedNumber, 0, true, -1);
                         mobileParty.PrisonRoster.RemoveTroop(prisoner.Character, prisoner.Number, default(UniqueTroopDescriptor), 0);
+                        
                     }
                     mobileParty.SetMoveGoToPoint(mobileParty.HomeSettlement.GatePosition);
                 }

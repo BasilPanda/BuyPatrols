@@ -2,7 +2,7 @@
 <Module>
   <Name value="BuyPatrols"/>
   <Id value="zzzBuyPatrols"/>
-  <Version value="v1.1.8"/>
+  <Version value="v1.1.9"/>
   <SingleplayerModule value="true"/>
   <MultiplayerModule value="false"/>
   <Official value="false" />
