@@ -1,4 +1,8 @@
-﻿**Version 1.2.0**
+﻿**Version 1.2.1**
+- Possible fix to duplicating lords (Needs more testing)
+- Added option to delete duplicate lords on load (Needs more testing. From personal testing, if I do it hourly/daily it will crash the game 50% of the time. Lords will not be deleted if they're fighting)
+
+**Version 1.2.0**
 - Fixed player patrol count not changing properly when giving fiefs/receiving fiefs with patrols (Patrols banners currently stay the to whatever faction owner's banner is. I'll look into this further next patch.)
 - Fixed player patrol count not increasing after using remove all patrols option
 - Fixed player patrol count not increasing after personally disbanding a patrol

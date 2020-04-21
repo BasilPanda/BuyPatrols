@@ -63,7 +63,15 @@ namespace BuyPatrols
             {
                 MessageBox.Show("Something screwed up in adding patrol dialog. " + e.ToString());
             }
-            
+            try
+            {
+                if (Settings.Instance.RemoveDuplicateLords)
+                    RemoveDuplicates();
+            } catch(Exception e)
+            {
+                MessageBox.Show("Error in deleting duped lords. " + e.ToString());
+            }
+
         }
 
         private void OnDailyTick()
@@ -92,6 +100,7 @@ namespace BuyPatrols
         {
             PatrolHourlyAi();
             //UnknownBehaviorChecker();
+
         }
         
         public override void RegisterEvents()
@@ -876,7 +885,7 @@ namespace BuyPatrols
                     {
                         foreach(MobileParty patrol in properties.patrols.ToList())
                         {
-                            if (patrol.IsEngaging)
+                            if (patrol.MapEvent != null)
                             {
                                 remaining++;
                             }
@@ -1108,6 +1117,37 @@ namespace BuyPatrols
                 }
             }
             return props;
+        }
+
+        public void RemoveDuplicates()
+        {
+            Dictionary<string,MobileParty> nonduplicates = new Dictionary<string, MobileParty>();
+            int count = 0;
+            foreach(MobileParty party in MobileParty.All.ToList())
+            {
+                if (party.LeaderHero != null)
+                {
+                    if (!nonduplicates.ContainsKey(party.LeaderHero.StringId))
+                    {
+                        nonduplicates.Add(party.LeaderHero.StringId, party);
+                        //InformationManager.DisplayMessage(new InformationMessage("Added lord w/ party ID" + party.StringId));
+                    }
+                    else
+                    {
+                        //InformationManager.DisplayMessage(new InformationMessage("Applied disband to duplicate lord: " + party.Name, Colors.Red));
+                        //DisbandPartyAction.ApplyDisband(party);
+                        if(party.MapEvent == null)
+                        {
+                            InformationManager.DisplayMessage(new InformationMessage("Removed duplicate lord party: " + party.Name, Colors.Red));
+                            party.RemoveParty();
+                        } else
+                        {
+                            count++;
+                        }
+                    }
+                }
+            }
+            InformationManager.DisplayMessage(new InformationMessage("Duplicate Parties Left: " + count, Colors.Red));
         }
 
         public override void SyncData(IDataStore dataStore)

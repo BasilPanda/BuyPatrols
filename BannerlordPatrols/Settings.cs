@@ -15,6 +15,10 @@ namespace BuyPatrols
         [SettingPropertyGroup(" Removal Settings")]
         public bool NukeAllPatrols { get; set; } = false;
 
+        [SettingProperty("Remove Duplicates", false, hintText: "When enabled, will attempt to remove duplicate lords and their parties.")]
+        [SettingPropertyGroup(" Removal Settings")]
+        public bool RemoveDuplicateLords { get; set; } = false;
+
         [SettingProperty("Target Caravans", false, hintText: "When enabled, all patrols will target caravans.")]
         [SettingPropertyGroup("Patrol Settings")]
         public bool TargetCaravans { get; set; } = false;
