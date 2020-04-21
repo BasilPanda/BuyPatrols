@@ -1,4 +1,19 @@
-﻿**Version 1.1.8**
+﻿**Version 1.2.0**
+- Fixed player patrol count not changing properly when giving fiefs/receiving fiefs with patrols (Patrols banners currently stay the to whatever faction owner's banner is. I'll look into this further next patch.)
+- Fixed player patrol count not increasing after using remove all patrols option
+- Fixed player patrol count not increasing after personally disbanding a patrol
+- Unknown behavior patrols should now start patrolling after a day (This should fix most of the freezing patrols. This doesn't fix patrols that were unknown and disbanded via disband all)
+- Added warning notification when you go over total patrols when capturing a settlement that has patrols 
+- Added militia option for patrols to be made up of militia instead of normal troops (only affects new patrols)
+
+**Version 1.1.10**
+- Added castles and towns to AI generation plus related config
+- Fixed menu options not showing up for attacking/being attacked by enemy patrols
+
+**Version 1.1.9**
+- Imprisoned lords should no longer duplicate.
+
+**Version 1.1.8**
 - Updated MBOptionScreen to 1.1.14 so mod options in game should work again.
 - Added town patrols plus related config. For towns: Go to the keep -> Manage patrols
 - Added a total patrol cap for players. Default = 12

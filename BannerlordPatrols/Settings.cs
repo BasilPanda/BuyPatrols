@@ -15,27 +15,30 @@ namespace BuyPatrols
         [SettingPropertyGroup(" Removal Settings")]
         public bool NukeAllPatrols { get; set; } = false;
 
-        [SettingProperty("Target Caravans", false, hintText: "When enabled, patrols will target caravans.")]
+        [SettingProperty("Target Caravans", false, hintText: "When enabled, all patrols will target caravans.")]
         [SettingPropertyGroup("Patrol Settings")]
         public bool TargetCaravans { get; set; } = false;
 
 
-        [SettingProperty("Target Villagers", false, hintText: "When enabled, patrols will target villagers.")]
+        [SettingProperty("Target Villagers", false, hintText: "When enabled, all patrols will target villagers.")]
         [SettingPropertyGroup("Patrol Settings")]
         public bool TargetVillagers { get; set; } = false;
 
+        [SettingProperty("Use Militia", false, hintText: "When enabled, all patrols will be militia instead of standard troops.")]
+        [SettingPropertyGroup("Patrol Settings")]
+        public bool UseMilitia { get; set; } = false;
 
-        [SettingProperty("Enable Bonus Speed to Patrols", hintText: "When enabled, patrols will gain bonus speed from the add patrol speed option.")]
+        [SettingProperty("Enable Bonus Speed to Patrols", hintText: "When enabled, all patrols will gain bonus speed from the add patrol speed option.")]
         [SettingPropertyGroup("Patrol Settings")]
         public bool AddPatrolSpeedEnabled { get; set; } = true;
 
 
-        [SettingProperty("Patrol Wages Hint Box", hintText: "When enabled, daily patrols wages will be included the clan expenses. When it is disabled, patrol wages will be notified on the bottom left.")]
+        [SettingProperty("Patrol Wages Hint Box", hintText: "When enabled, all daily patrols wages will be included the clan expenses. When it is disabled, patrol wages will be notified on the bottom left.")]
         [SettingPropertyGroup("Patrol Settings")]
         public bool PatrolWagesHintBox { get; set; } = true;
         
         
-        [SettingProperty("Notify Patrol Destroyed", hintText:"When enabled, will send a notification on the bottom left when a patrol has been destroyed. Only applies for new patrols.")]
+        [SettingProperty("Notify Patrol Destroyed", hintText:"When enabled, will send a notification on the bottom left when a personal patrol has been destroyed. Only applies for new patrols.")]
         [SettingPropertyGroup("Patrol Settings")]
         public bool NotifyDestroyedPatrol { get; set; } = true;
 
@@ -65,16 +68,16 @@ namespace BuyPatrols
         public int MaxTotalPatrols { get; set; } = 12;
 
 
-        [SettingProperty("Patrols per Village", 0, 10, false, hintText: "Modifies the max amount of patrols per village.")]
+        [SettingProperty("Patrols per Village", 0, 30, false, hintText: "Modifies the max amount of patrols per village.")]
         [SettingPropertyGroup("Patrol Settings")]
         public int MaxPatrolCountPerVillage { get; set; } = 3;
 
 
-        [SettingProperty("Patrols per Castle", 0, 10, false, hintText: "Modifies the max amount of patrols per castle.")]
+        [SettingProperty("Patrols per Castle", 0, 30, false, hintText: "Modifies the max amount of patrols per castle.")]
         [SettingPropertyGroup("Patrol Settings")]
         public int MaxPatrolCountPerCastle { get; set; } = 3;
 
-        [SettingProperty("Patrols per Town", 0, 10, false, hintText: "Modifies the max amount of patrols per town.")]
+        [SettingProperty("Patrols per Town", 0, 30, false, hintText: "Modifies the max amount of patrols per town.")]
         [SettingPropertyGroup("Patrol Settings")]
         public int MaxPatrolCountPerTown{ get; set; } = 1;
 
@@ -139,6 +142,13 @@ namespace BuyPatrols
         [SettingPropertyGroup("Ai Hiring Settings")]
         public int HearthMaximum { get; set; } = 500;
 
+        [SettingProperty("Castle Prosperity Limit", 250, 10000, false, hintText: "If a castle's prosperity is below this number, the lord will run the chance to spawn a patrol for it.")]
+        [SettingPropertyGroup("Ai Hiring Settings")]
+        public int AICastleProsperity { get; set; } = 1000;
+
+        [SettingProperty("Town Prosperity Limit", 250, 10000, false, hintText: "If a town's prosperity is below this number, the lord will run the chance to spawn a patrol for it.")]
+        [SettingPropertyGroup("Ai Hiring Settings")]
+        public int AITownProsperity { get; set; } = 2000;
 
         [SettingProperty("Patrol Bonus Speed", 0, 10, false, hintText: "The bonus speed that will be added to AI hired patrols.")]
         [SettingPropertyGroup("Ai Hiring Settings")]
