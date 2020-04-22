@@ -1,4 +1,8 @@
-﻿**Version 1.2.1**
+﻿**Version 1.2.2**
+- Due to duplication bug, patrols no longer store prisoners in settlements and instead sell them off automatically when they go to a settlement and take the money themselves. (This should fix duplicating lords)
+- Duplication removal now runs daily and should keep the original lord alive to prevent crashing.
+
+**Version 1.2.1**
 - Possible fix to duplicating lords (Needs more testing)
 - Added option to delete duplicate lords on load (Needs more testing. From personal testing, if I do it hourly/daily it will crash the game 50% of the time. Lords will not be deleted if they're fighting)
 

@@ -94,13 +94,14 @@ namespace BuyPatrols
                 AttemptToDestroyAllPatrols();
             }
             UnknownBehaviorChecker();
+            if (Settings.Instance.RemoveDuplicateLords)
+                RemoveDuplicates();
         }
 
         private void OnHourlyTick()
         {
             PatrolHourlyAi();
             //UnknownBehaviorChecker();
-
         }
         
         public override void RegisterEvents()
@@ -864,8 +865,9 @@ namespace BuyPatrols
                 //InformationManager.DisplayMessage(new InformationMessage(new TextObject("Patrol entered " + settlement.Name, null).ToString()));
                 if (settlement.IsTown || settlement.IsCastle)
                 {
-                    settlement.Party.PrisonRoster.Add(mobileParty.PrisonRoster);
-                    mobileParty.Party.PrisonRoster.Clear();
+                    SellPrisonersAction.ApplyForAllPrisoners(mobileParty, mobileParty.PrisonRoster, settlement, false);
+                    //settlement.Party.PrisonRoster.Add(mobileParty.PrisonRoster);
+                    //mobileParty.Party.PrisonRoster.Clear();
                     mobileParty.SetMoveGoToPoint(mobileParty.FindReachablePointAroundPosition(mobileParty.HomeSettlement.GatePosition,10));
                 }
             }
@@ -1121,29 +1123,24 @@ namespace BuyPatrols
 
         public void RemoveDuplicates()
         {
-            Dictionary<string,MobileParty> nonduplicates = new Dictionary<string, MobileParty>();
+            //Dictionary<string,MobileParty> nonduplicates = new Dictionary<string, MobileParty>();
             int count = 0;
             foreach(MobileParty party in MobileParty.All.ToList())
             {
-                if (party.LeaderHero != null)
+                foreach (var troop in party.MemberRoster.Where(troop => troop.Character.IsHero))
                 {
-                    if (!nonduplicates.ContainsKey(party.LeaderHero.StringId))
+                    if(troop.Character.HeroObject.PartyBelongedTo != party && troop.Character.HeroObject == party.LeaderHero)
                     {
-                        nonduplicates.Add(party.LeaderHero.StringId, party);
-                        //InformationManager.DisplayMessage(new InformationMessage("Added lord w/ party ID" + party.StringId));
-                    }
-                    else
-                    {
-                        //InformationManager.DisplayMessage(new InformationMessage("Applied disband to duplicate lord: " + party.Name, Colors.Red));
-                        //DisbandPartyAction.ApplyDisband(party);
-                        if(party.MapEvent == null)
+                        if (party.MapEvent == null)
                         {
                             InformationManager.DisplayMessage(new InformationMessage("Removed duplicate lord party: " + party.Name, Colors.Red));
                             party.RemoveParty();
-                        } else
+                        }
+                        else
                         {
                             count++;
                         }
+                        break;
                     }
                 }
             }
