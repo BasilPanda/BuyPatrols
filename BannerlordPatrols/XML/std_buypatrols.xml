@@ -1,36 +1,77 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
   <tags>
     <tag language="English" />
   </tags>
   <strings>
-    <string id="BUYPATROLSWARNING" text="BuyPatrols WARNING: DESTROYING ALL PATROLS DAILY OPTION ENABLED."/>
-    <string id="BUYPATROLSNOTIFY" text="{PATROLNAME} has been wiped out by {DESTROYERNAME}."/>
-    <string id="BUYPATROLSREMOVEDNOTIFY" text="{PATROLSREMOVED} patrols have been removed today."/>
-    <string id="BUYPATROLSREMAININGNOTIFY" text="There are {PATROLSREMAINING} patrols remaining and are currently in engagement."/>
-    <string id="BUYPATROLSMENU001" text="Manage patrols"/>
-    <string id="BUYPATROLSMENU002" text="The {BASILPATROL_SETTLEMENT_TYPE} says they have the manpower but not the gear to send men on patrols. He tells he can send up to {BASILPATROL_MAX_PATROL_AMOUNT} patrols if you are willing to pay their gear. Your clan must own the village to hire patrols. Patrols will switch allegiance to the new clan owner if ownership changes. Disbanding patrols will only affect patrols that are not engaging an enemy. You can have a total of {BASILPATROLS_CAP_PATROLS} patrols in your clan. You have {BASILPATROLS_CAP_LEFT} patrols you can still hire for your clan."/>
-    <string id="BUYPATROLSMENU003" text="village spokesman"/>
-    <string id="BUYPATROLSMENU004" text="castle sergeant"/>
-    <string id="BUYPATROLSMENU005" text="You have hired a patrol at {BUYPATROLSCURRENTSETTLEMENT}."/>
-    <string id="BUYPATROLSMENU006" text="Pay for a small patrol ({BASILPATROL_SMALL_COST}{GOLD_ICON})"/>
-    <string id="BUYPATROLSMENU007" text="Pay for a medium patrol ({BASILPATROL_MEDIUM_COST}{GOLD_ICON})"/>
-    <string id="BUYPATROLSMENU008" text="Pay for a large patrol ({BASILPATROL_LARGE_COST}{GOLD_ICON})"/>
-    <string id="BUYPATROLSMENU009" text="Disband all patrols"/>
-    <string id="BUYPATROLSMENU010" text="Leave"/>
-    <string id="BUYPATROLS000" text="Patrol"/>
-    <string id="BUYPATROLS001" text="Hello my lord. What do you need us to do?"/>
-    <string id="BUYPATROLS002" text="Donate Troops"/>
-    <string id="BUYPATROLS003" text="Disband."/>
-    <string id="BUYPATROLS004" text="Carry on. Farewell."/>
-    <string id="BUYPATROLS005" text="Anything else?"/>
-    <string id="BUYPATROLS006" text="Disband now."/>
-    <string id="BUYPATROLS007" text="We are patrolling around {BASILPATROL_AREA} under commands of {BASILPATROLS_LIEGE_0}. What do you want?"/>
-    <string id="BUYPATROLS008" text="Surrender or die."/>
-    <string id="BUYPATROLS009" text="Nothing just passing by."/>
-    <string id="BUYPATROLS010" text="What? You can't be serious?"/>
-    <string id="BUYPATROLS011" text="I didn't stutter. Surrender or die!"/>
-    <string id="BUYPATROLS012" text="Just joking, goodbye!"/>
-    <string id="BUYPATROLS013" text="Stop right there! You're an enemy of {BASILPATROLS_LIEGE} and we shall capture you."/>
-    <string id="BUYPATROLS014" text="We can do this the easy way or the hard way."/>
+    <string id="modbp001" text="BuyPatrols WARNING: DESTROYING ALL PATROLS DAILY OPTION ENABLED."/>
+    <string id="modbp002" text="{PATROLNAME} has been wiped out by {DESTROYERNAME}."/>
+    <string id="modbp003" text="{PATROLSREMOVED} patrols have been removed today."/>
+    <string id="modbp004" text="Manage patrols"/>
+    <string id="modbp005" text="There are {PATROLSREMAINING} patrols remaining and are currently in engagement."/>
+    <string id="modbp006" text="The {BASILPATROL_SETTLEMENT_TYPE} says they have the manpower but not the gear to send men on patrols. He tells he can send up to {BASILPATROL_MAX_PATROL_AMOUNT} patrols if you are willing to pay their gear. Your clan must own the village to hire patrols. Patrols will switch allegiance to the new clan owner if ownership changes. Disbanding patrols will only affect patrols that are not engaging an enemy. You can have a total of {BASILPATROLS_CAP_PATROLS} patrols in your clan. You have {BASILPATROLS_CAP_LEFT} patrols you can still hire for your clan."/>
+    <string id="modbp007" text="village spokesman"/>
+    <string id="modbp008" text="castle sergeant"/>
+    <string id="modbp009" text="You have hired a patrol at {BUYPATROLSCURRENTSETTLEMENT}."/>
+    <string id="modbp010" text="Pay for a small patrol ({BASILPATROL_SMALL_COST}{GOLD_ICON})"/>
+    <string id="modbp011" text="Pay for a medium patrol ({BASILPATROL_MEDIUM_COST}{GOLD_ICON})"/>
+    <string id="modbp012" text="Pay for a large patrol ({BASILPATROL_LARGE_COST}{GOLD_ICON})"/>
+    <string id="modbp013" text="Disband all patrols"/>
+    <string id="modbp014" text="Leave"/>
+    <string id="modbp016" text="Hello my lord. What do you need us to do?"/>
+    <string id="modbp017" text="Donate Troops"/>
+    <string id="modbp018" text="Disband."/>
+    <string id="modbp019" text="Carry on. Farewell."/>
+    <string id="modbp020" text="Anything else?"/>
+    <string id="modbp021" text="Disband now."/>
+    <string id="modbp022" text="We are patrolling around {BASILPATROL_AREA} under commands of {BASILPATROLS_LIEGE_0}. What do you want?"/>
+    <string id="modbp023" text="Surrender or die."/>
+    <string id="modbp024" text="Nothing just passing by."/>
+    <string id="modbp025" text="What? You can't be serious?"/>
+    <string id="modbp026" text="I didn't stutter. Surrender or die!"/>
+    <string id="modbp027" text="Just joking, goodbye!"/>
+    <string id="modbp028" text="Stop right there! You're an enemy of {BASILPATROLS_LIEGE} and we shall capture you."/>
+    <string id="modbp029" text="We can do this the easy way or the hard way."/>
+    <string id="modbpoptionPatrolSettings" text="Patrol Settings"/>
+    <string id="modbpoption001" text=" Removal Settings"/>
+    <string id="modbpoption002" text="REMOVE ALL PATROLS"/>
+    <string id="modbpoption003" text="When enabled, will attempt to delete ALL patrols that aren't engaging a party. This might take several days. Will notify the number of patrols left and destroyed."/>
+    <string id="modbpoption004" text="Remove Duplicates"/>
+    <string id="modbpoption005" text="When enabled, will attempt to remove duplicate lords and their parties."/>
+    <string id="modbpoption006" text="Target Caravans"/>
+    <string id="modbpoption007" text="When enabled, all patrols will target caravans."/>
+    <string id="modbpoption008" text="Target Villagers"/>
+    <string id="modbpoption009" text="When enabled, all patrols will target villagers."/>
+    <string id="modbpoption010" text="Use Militia"/>
+    <string id="modbpoption011" text="When enabled, all patrols will be militia instead of standard troops."/>
+    <string id="modbpoption012" text="Enable Bonus Speed to Patrols"/>
+    <string id="modbpoption013" text="When enabled, all patrols will gain bonus speed from the add patrol speed option."/>
+    <string id="modbpoption014" text="Patrol Wages Hint Box"/>
+    <string id="modbpoption015" text="When enabled, all daily patrols wages will be included the clan expenses. When it is disabled, patrol wages will be notified on the bottom left."/>
+    <string id="modbpoption016" text="Notify Patrol Destroyed"/>
+    <string id="modbpoption017" text="When enabled, will send a notification on the bottom left when a personal patrol has been destroyed. Only applies for new patrols."/>
+    <string id="modbpoption018" text="Personal Patrol Bonus Speed"/>
+    <string id="modbpoption019" text="The bonus speed that will be added to patrols within your clan."/>
+    <string id="modbpoption020" text="Base Cost to Patrols"/>
+    <string id="modbpoption021" text="Modifies the daily wage amount. 0 makes it so there are no patrol wages to pay."/>
+    <string id="modbpoption022" text="Max Total Patrols"/>
+    <string id="modbpoption023" text="Modifies the max amount of patrols that players can have at one time. The more patrols in your map can cause unforeseen bugs and issues."/>
+    <string id="modbpoption024" text="Patrols per Village"/>
+    <string id="modbpoption025" text="Modifies the max amount of patrols per village."/>
+    <string id="modbpoption026" text="Patrols per Castle"/>
+    <string id="modbpoption027" text="Modifies the max amount of patrols per castle."/>
+    <string id="modbpoption028" text="Patrols per Town"/>
+    <string id="modbpoption029" text="Modifies the max amount of patrols per town."/>
+    <string id="modbpoption030" text="Base Patrol Size"/>
+    <string id="modbpoption031" text="Modifies the base average men per patrol. This affects all sizes. Medium is 2x and large is 3x this number"/>
+    <string id="modbpoption032" text="Allow Relation Gain"/>
+    <string id="modbpoption033" text="When enabled, a daily 10% chance to gain relation with notables that have patrols."/>
+    <string id="modbpoption034" text="Notify Relation Change"/>
+    <string id="modbpoption035" text="When enabled, will send a notification on each relation change due to having patrols."/>
+    <string id="modbpoption036" text="Notable Relation Cap"/>
+    <string id="modbpoption037" text="The relation cap for having patrols per notable. Relation gain will stop after reaching this value."/>
+    <string id="modbpoption038" text="Force Troop Capacity"/>
+    <string id="modbpoption039" text="When enabled, forces patrols to be capped at large patrol size. Will randomly remove troops over the large patrol size."/>
+    
   </strings>
+</base>

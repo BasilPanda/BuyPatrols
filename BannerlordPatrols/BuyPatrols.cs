@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using TaleWorlds.CampaignSystem.ViewModelCollection;
 using TaleWorlds.CampaignSystem.SandBox.GameComponents.Map;
 using TaleWorlds.Library;
+using TaleWorlds.CampaignSystem.SandBox.Conversations;
 
 namespace BuyPatrols
 {
@@ -38,14 +39,14 @@ namespace BuyPatrols
         public int MaxPatrolCountPerTown = Settings.Instance.MaxPatrolCountPerTown;
         public int RelationCap = Settings.Instance.RelationCap;
         public int MaxTotalPatrols = Settings.Instance.MaxTotalPatrols;
-        public TextObject patrolWord = new TextObject("{=BUYPATROLS000}Patrol");
+        public TextObject patrolWord = new TextObject("Patrol");
         #endregion
 
         private void OnSessionLaunched(CampaignGameStarter obj)
         {
             if (Settings.Instance.NukeAllPatrols)
             {
-                InformationManager.DisplayMessage(new InformationMessage("BuyPatrols WARNING: DESTROYING ALL PATROLS DAILY OPTION ENABLED.", Colors.Red));
+                InformationManager.DisplayMessage(new InformationMessage("{=modbp001}BuyPatrols WARNING: DESTROYING ALL PATROLS DAILY OPTION ENABLED.", Colors.Red));
             }
             TrackPatrols();
             try
@@ -103,7 +104,7 @@ namespace BuyPatrols
             PatrolHourlyAi();
             //UnknownBehaviorChecker();
         }
-        
+
         public override void RegisterEvents()
         {
             CampaignEvents.OnSessionLaunchedEvent.AddNonSerializedListener(this, new Action<CampaignGameStarter>(this.OnSessionLaunched));
@@ -120,7 +121,7 @@ namespace BuyPatrols
         {
             try
             {
-                obj.AddGameMenuOption("village", "basilpatrol_manage_patrol", "{=BUYPATROLSMENU001}Manage patrols",
+                obj.AddGameMenuOption("village", "basilpatrol_manage_patrol", "{=modbp004}Manage patrols",
                     (MenuCallbackArgs args) =>
                     {
                         args.optionLeaveType = GameMenuOption.LeaveType.Manage;
@@ -137,7 +138,7 @@ namespace BuyPatrols
                     },
                     (MenuCallbackArgs args) => { GameMenu.SwitchToMenu("basilpatrol_pay_menu"); }, false, 4);
 
-                obj.AddGameMenu("basilpatrol_pay_menu", "{=BUYPATROLSMENU002}The {BASILPATROL_SETTLEMENT_TYPE} says they have the manpower but not the gear to " +
+                obj.AddGameMenu("basilpatrol_pay_menu", "{=modbp006}The {BASILPATROL_SETTLEMENT_TYPE} says they have the manpower but not the gear to " +
                     "send men on patrols. He tells he can send up to {BASILPATROL_MAX_PATROL_AMOUNT} patrols if you are willing to pay their " +
                     "gear. Your clan must own the village to hire patrols. Patrols will switch allegiance to the new clan owner if ownership changes. " +
                     "Disbanding patrols will only affect patrols that are not engaging an enemy. You can have a total of {BASILPATROLS_CAP_PATROLS} patrols in your clan. " +
@@ -146,16 +147,16 @@ namespace BuyPatrols
                     {
                         if (Settlement.CurrentSettlement.IsVillage)
                         {
-                            MBTextManager.SetTextVariable("BASILPATROL_SETTLEMENT_TYPE", "{=BUYPATROLSMENU003}village spokesman", false);
+                            MBTextManager.SetTextVariable("BASILPATROL_SETTLEMENT_TYPE", "{=modbp007}village spokesman", false);
                             MBTextManager.SetTextVariable("BASILPATROL_MAX_PATROL_AMOUNT", MaxPatrolCountPerVillage, false);
                         } else if(Settlement.CurrentSettlement.IsTown)
                         {
-                            MBTextManager.SetTextVariable("BASILPATROL_SETTLEMENT_TYPE", "{=BUYPATROLSMENU004}castle sergeant", false);
+                            MBTextManager.SetTextVariable("BASILPATROL_SETTLEMENT_TYPE", "{=modbp008}castle sergeant", false);
                             MBTextManager.SetTextVariable("BASILPATROL_MAX_PATROL_AMOUNT", MaxPatrolCountPerTown, false);
                         }
                         else
                         {
-                            MBTextManager.SetTextVariable("BASILPATROL_SETTLEMENT_TYPE", "{=BUYPATROLSMENU004}castle sergeant", false);
+                            MBTextManager.SetTextVariable("BASILPATROL_SETTLEMENT_TYPE", "{=modbp008}castle sergeant", false);
                             MBTextManager.SetTextVariable("BASILPATROL_MAX_PATROL_AMOUNT", MaxPatrolCountPerCastle, false);
                         }
                         MBTextManager.SetTextVariable("BASILPATROLS_CAP_PATROLS", MaxTotalPatrols, false);
@@ -164,7 +165,7 @@ namespace BuyPatrols
 
                 #region Hiring
 
-                obj.AddGameMenuOption("basilpatrol_pay_menu", "basilpatrol_pay_small", "{=BUYPATROLSMENU006}Pay for a small patrol ({BASILPATROL_SMALL_COST}{GOLD_ICON})",
+                obj.AddGameMenuOption("basilpatrol_pay_menu", "basilpatrol_pay_small", "{=modbp010}Pay for a small patrol ({BASILPATROL_SMALL_COST}{GOLD_ICON})",
                     (MenuCallbackArgs args) =>
                     {
                         try
@@ -194,7 +195,7 @@ namespace BuyPatrols
                             int cost = BaseCost + patrolProperties.getPatrolCost();
                             if (AttemptAddPatrolToDictionary(Settlement.CurrentSettlement, patrolProperties, cost))
                             {
-                                TextObject text = new TextObject("{=BUYPATROLSMENU005}You have hired a patrol at {BUYPATROLSCURRENTSETTLEMENT}.");
+                                TextObject text = new TextObject("{=modbp009}You have hired a patrol at {BUYPATROLSCURRENTSETTLEMENT}.");
                                 text.SetTextVariable("BUYPATROLSCURRENTSETTLEMENT", Settlement.CurrentSettlement.ToString());
                                 InformationManager.DisplayMessage(new InformationMessage(text.ToString()));
                             }
@@ -207,7 +208,7 @@ namespace BuyPatrols
                         
                     });
 
-                obj.AddGameMenuOption("basilpatrol_pay_menu", "basilpatrol_pay_medium", "{=BUYPATROLSMENU007}Pay for a medium patrol ({BASILPATROL_MEDIUM_COST}{GOLD_ICON})",
+                obj.AddGameMenuOption("basilpatrol_pay_menu", "basilpatrol_pay_medium", "{=modbp011}Pay for a medium patrol ({BASILPATROL_MEDIUM_COST}{GOLD_ICON})",
                     (MenuCallbackArgs args) =>
                     {
                         try
@@ -238,7 +239,7 @@ namespace BuyPatrols
                             int cost = (BaseCost + patrolProperties.getPatrolCost()) * 2;
                             if (AttemptAddPatrolToDictionary(Settlement.CurrentSettlement, patrolProperties, cost, 2))
                             {
-                                TextObject text = new TextObject("{=BUYPATROLSMENU005}You have hired a patrol at {BUYPATROLSCURRENTSETTLEMENT}.");
+                                TextObject text = new TextObject("{=modbp009}You have hired a patrol at {BUYPATROLSCURRENTSETTLEMENT}.");
                                 text.SetTextVariable("BUYPATROLSCURRENTSETTLEMENT", Settlement.CurrentSettlement.ToString());
                                 InformationManager.DisplayMessage(new InformationMessage(text.ToString()));
                             }
@@ -251,7 +252,7 @@ namespace BuyPatrols
                         
                     });
 
-                obj.AddGameMenuOption("basilpatrol_pay_menu", "basilpatrol_pay_large", "{=BUYPATROLSMENU008}Pay for a large patrol ({BASILPATROL_LARGE_COST}{GOLD_ICON})",
+                obj.AddGameMenuOption("basilpatrol_pay_menu", "basilpatrol_pay_large", "{=modbp012}Pay for a large patrol ({BASILPATROL_LARGE_COST}{GOLD_ICON})",
                     (MenuCallbackArgs args) =>
                     {
                         try
@@ -283,7 +284,7 @@ namespace BuyPatrols
                             int cost = (BaseCost + patrolProperties.getPatrolCost()) * 3;
                             if (AttemptAddPatrolToDictionary(Settlement.CurrentSettlement, patrolProperties, cost, 3))
                             {
-                                TextObject text = new TextObject("{=BUYPATROLSMENU005}You have hired a patrol at {BUYPATROLSCURRENTSETTLEMENT}.");
+                                TextObject text = new TextObject("{=modbp009}You have hired a patrol at {BUYPATROLSCURRENTSETTLEMENT}.");
                                 text.SetTextVariable("BUYPATROLSCURRENTSETTLEMENT", Settlement.CurrentSettlement.ToString());
                                 InformationManager.DisplayMessage(new InformationMessage(text.ToString()));
                             }
@@ -297,7 +298,7 @@ namespace BuyPatrols
                     });
                 #endregion
 
-                obj.AddGameMenuOption("basilpatrol_pay_menu", "basilpatrol_disband_all", "{=BUYPATROLSMENU009}Disband all patrols",
+                obj.AddGameMenuOption("basilpatrol_pay_menu", "basilpatrol_disband_all", "{=modbp013}Disband all patrols",
                     (MenuCallbackArgs args) =>
                     {
                         try
@@ -358,7 +359,7 @@ namespace BuyPatrols
                         
                     });
 
-                obj.AddGameMenuOption("basilpatrol_pay_menu", "basilpatrol_leave", "{=BUYPATROLSMENU010}Leave", game_menu_just_add_leave_conditional, game_menu_switch_to_main_menu);
+                obj.AddGameMenuOption("basilpatrol_pay_menu", "basilpatrol_leave", "{=modbp014}Leave", game_menu_just_add_leave_conditional, game_menu_switch_to_main_menu);
             } catch(Exception e)
             {
                 MessageBox.Show(e.ToString());
@@ -367,7 +368,7 @@ namespace BuyPatrols
 
         public void AddWalledSettlementDialog(CampaignGameStarter obj)
         {
-            obj.AddGameMenuOption("castle", "basilpatrol_castle_patrol", "{=BUYPATROLSMENU001}Manage patrols", (MenuCallbackArgs args) =>
+            obj.AddGameMenuOption("castle", "basilpatrol_castle_patrol", "{=modbp004}Manage patrols", (MenuCallbackArgs args) =>
             {
                 args.optionLeaveType = GameMenuOption.LeaveType.Manage;
                 //if(Hero.MainHero.IsFactionLeader && Settlement.CurrentSettlement.MapFaction == Hero.MainHero.MapFaction && MaxPatrolCountPerCastle != 0)
@@ -382,7 +383,7 @@ namespace BuyPatrols
             },
             (MenuCallbackArgs args) => { GameMenu.SwitchToMenu("basilpatrol_pay_menu"); }, false, 4);
 
-            obj.AddGameMenuOption("town_keep", "basilpatrol_town_patrol", "{=BUYPATROLSMENU001}Manage patrols", (MenuCallbackArgs args) =>
+            obj.AddGameMenuOption("town_keep", "basilpatrol_town_patrol", "{=modbp004}Manage patrols", (MenuCallbackArgs args) =>
             {
                 args.optionLeaveType = GameMenuOption.LeaveType.Manage;
                 //if (Hero.MainHero.IsFactionLeader && Settlement.CurrentSettlement.MapFaction == Hero.MainHero.MapFaction && MaxPatrolCountPerTown != 0)
@@ -402,30 +403,30 @@ namespace BuyPatrols
         {
             #region Player Patrols
 
-            obj.AddDialogLine("mod_buypatrols_talk_start", "start", "mod_buypatrols_talk", "{=BUYPATROLS001}Hello my lord. What do you need us to do?", new ConversationSentence.OnConditionDelegate(this.patrol_talk_start_on_conditional), null, 100, null);
-            obj.AddPlayerLine("mod_buypatrols_donate_troops", "mod_buypatrols_talk", "mod_buypatrols_after_donate", "{=BUYPATROLS002}Donate Troops", null, new ConversationSentence.OnConsequenceDelegate(this.conversation_patrol_donate_troops_on_consequence), 100, null, null);
-            obj.AddPlayerLine("mod_buypatrols_disband", "mod_buypatrols_talk", "close_window", "{=BUYPATROLS003}Disband.", null, new ConversationSentence.OnConsequenceDelegate(this.conversation_patrol_disband_on_consequence), 100, null, null);
-            obj.AddPlayerLine("mod_buypatrols_leave", "mod_buypatrols_talk", "close_window", "{=BUYPATROLS004}Carry on. Farewell.", null, new ConversationSentence.OnConsequenceDelegate(this.conversation_patrol_leave_on_consequence), 100, null, null);
-            obj.AddDialogLine("mod_buypatrols_after_donate", "mod_buypatrols_after_donate", "mod_buypatrols_talk", "{=BUYPATROLS005}Anything else?", null, null, 100, null);
-            obj.AddPlayerLine("mod_leaderless_party_answer", "disbanding_leaderless_party_start_response", "close_window", "{=BUYPATROLS006}Disband now.", null, new ConversationSentence.OnConsequenceDelegate(this.conversation_patrol_disband_now_on_consequence), 100, null, null);
+            obj.AddDialogLine("mod_buypatrols_talk_start", "start", "mod_buypatrols_talk", "{=modbp016}Hello my lord. What do you need us to do?", new ConversationSentence.OnConditionDelegate(this.patrol_talk_start_on_conditional), null, 100, null);
+            obj.AddPlayerLine("mod_buypatrols_donate_troops", "mod_buypatrols_talk", "mod_buypatrols_after_donate", "{=modbp017}Donate Troops", null, new ConversationSentence.OnConsequenceDelegate(this.conversation_patrol_donate_troops_on_consequence), 100, null, null);
+            obj.AddPlayerLine("mod_buypatrols_disband", "mod_buypatrols_talk", "close_window", "{=modbp018}Disband.", null, new ConversationSentence.OnConsequenceDelegate(this.conversation_patrol_disband_on_consequence), 100, null, null);
+            obj.AddPlayerLine("mod_buypatrols_leave", "mod_buypatrols_talk", "close_window", "{=modbp019}Carry on. Farewell.", null, new ConversationSentence.OnConsequenceDelegate(this.conversation_patrol_leave_on_consequence), 100, null, null);
+            obj.AddDialogLine("mod_buypatrols_after_donate", "mod_buypatrols_after_donate", "mod_buypatrols_talk", "{=modbp020}Anything else?", null, null, 100, null);
+            obj.AddPlayerLine("mod_leaderless_party_answer", "disbanding_leaderless_party_start_response", "close_window", "{=modbp021}Disband now.", null, new ConversationSentence.OnConsequenceDelegate(this.conversation_patrol_disband_now_on_consequence), 100, null, null);
 
             #endregion
 
             #region Neutral Patrols
 
-            obj.AddDialogLine("mod_buypatrols_talk_neutral_start", "start", "mod_buypatrols_neutral_talk", "{=BUYPATROLS007}We are patrolling around {BASILPATROL_AREA} under commands of {BASILPATROLS_LIEGE_0}. What do you want?", new ConversationSentence.OnConditionDelegate(this.patrol_talk_neutral_start_conditional), null, 100, null);
-            obj.AddPlayerLine("mod_buypatrols_neutral_attack", "mod_buypatrols_neutral_talk", "mod_buypatrols_neutral_aggresive", "{=BUYPATROLS008}Surrender or die.", null, null, 100, null, null);
-            obj.AddPlayerLine("mod_buypatrols_neutral_leave", "mod_buypatrols_neutral_talk", "close_window", "{=BUYPATROLS009}Nothing just passing by.", null, new ConversationSentence.OnConsequenceDelegate(this.conversation_patrol_leave_on_consequence), 100, null, null);
-            obj.AddDialogLine("mod_buypatrols_neutral_aggresive", "mod_buypatrols_neutral_aggresive", "mod_buypatrols_neutral_aggresive_player_response", "{=BUYPATROLS010}What? You can't be serious?", null,null,100,null);
-            obj.AddPlayerLine("mod_buypatrols_neutral_aggro_attack", "mod_buypatrols_neutral_aggresive_player_response", "close_window", "{=BUYPATROLS011}I didn't stutter. Surrender or die!", null, new ConversationSentence.OnConsequenceDelegate(this.convo_neutral_war_on_consequence), 100, null, null);
-            obj.AddPlayerLine("mod_buypatrols_neutral_aggro_oops", "mod_buypatrols_neutral_aggresive_player_response", "close_window", "{=BUYPATROLS012}Just joking, goodbye!", null, new ConversationSentence.OnConsequenceDelegate(this.conversation_patrol_leave_on_consequence), 100, null, null);
+            obj.AddDialogLine("mod_buypatrols_talk_neutral_start", "start", "mod_buypatrols_neutral_talk", "{=modbp022}We are patrolling around {BASILPATROL_AREA} under commands of {BASILPATROLS_LIEGE_0}. What do you want?", new ConversationSentence.OnConditionDelegate(this.patrol_talk_neutral_start_conditional), null, 100, null);
+            obj.AddPlayerLine("mod_buypatrols_neutral_attack", "mod_buypatrols_neutral_talk", "mod_buypatrols_neutral_aggresive", "{=modbp023}Surrender or die.", null, null, 100, null, null);
+            obj.AddPlayerLine("mod_buypatrols_neutral_leave", "mod_buypatrols_neutral_talk", "close_window", "{=modbp024}Nothing just passing by.", null, new ConversationSentence.OnConsequenceDelegate(this.conversation_patrol_leave_on_consequence), 100, null, null);
+            obj.AddDialogLine("mod_buypatrols_neutral_aggresive", "mod_buypatrols_neutral_aggresive", "mod_buypatrols_neutral_aggresive_player_response", "{=modbp025}What? You can't be serious?", null,null,100,null);
+            obj.AddPlayerLine("mod_buypatrols_neutral_aggro_attack", "mod_buypatrols_neutral_aggresive_player_response", "close_window", "{=modbp026}I didn't stutter. Surrender or die!", null, new ConversationSentence.OnConsequenceDelegate(this.convo_neutral_war_on_consequence), 100, null, null);
+            obj.AddPlayerLine("mod_buypatrols_neutral_aggro_oops", "mod_buypatrols_neutral_aggresive_player_response", "close_window", "{=modbp027}Just joking, goodbye!", null, new ConversationSentence.OnConsequenceDelegate(this.conversation_patrol_leave_on_consequence), 100, null, null);
 
             #endregion
 
             #region Enemy Patrols
 
-            obj.AddDialogLine("mod_buypatrols_talk_enemy_start", "start", "mod_buypatrols_enemy_talk", "{=BUYPATROLS013}Stop right there! You're an enemy of {BASILPATROLS_LIEGE} and we shall capture you.", new ConversationSentence.OnConditionDelegate(this.patrol_talk_enemy_start_conditional), null, 100, null);
-            obj.AddPlayerLine("mod_buypatrols_enemy_leave", "mod_buypatrols_enemy_talk", "close_window", "{=BUYPATROLS014}We can do this the easy way or the hard way.", null, new ConversationSentence.OnConsequenceDelegate(this.convo_enemy_talk_battle_consequence), 100, null, null);
+            obj.AddDialogLine("mod_buypatrols_talk_enemy_start", "start", "mod_buypatrols_enemy_talk", "{=modbp028}Stop right there! You're an enemy of {BASILPATROLS_LIEGE} and we shall capture you.", new ConversationSentence.OnConditionDelegate(this.patrol_talk_enemy_start_conditional), null, 100, null);
+            obj.AddPlayerLine("mod_buypatrols_enemy_leave", "mod_buypatrols_enemy_talk", "close_window", "{=modbp029}We can do this the easy way or the hard way.", null, new ConversationSentence.OnConsequenceDelegate(this.convo_enemy_talk_battle_consequence), 100, null, null);
 
             #endregion
         }
@@ -906,9 +907,9 @@ namespace BuyPatrols
                     }
                 }
             }
-            TextObject removed = new TextObject("{=BUYPATROLSREMOVEDNOTIFY}{PATROLSREMOVED} patrols have been removed today.");
+            TextObject removed = new TextObject("{=modbp003}{PATROLSREMOVED} patrols have been removed today.");
             removed.SetTextVariable("PATROLSREMOVED", destroyed);
-            TextObject remainingText = new TextObject("{=BUYPATROLSREMAININGNOTIFY}There are {PATROLSREMAINING} patrols remaining and are currently in engagement.");
+            TextObject remainingText = new TextObject("{=modbp005}There are {PATROLSREMAINING} patrols remaining and are currently in engagement.");
             remainingText.SetTextVariable("PATROLSREMAINING", remaining);
             InformationManager.DisplayMessage(new InformationMessage(removed.ToString(), Colors.Red));
             InformationManager.DisplayMessage(new InformationMessage(remainingText.ToString(), Colors.Cyan));
@@ -990,7 +991,7 @@ namespace BuyPatrols
                     {
                         if (Settings.Instance.NotifyDestroyedPatrol)
                         {
-                            TextObject text = new TextObject("{=BUYPATROLSNOTIFY}{PATROLNAME} has been wiped out by {DESTROYERNAME}.");
+                            TextObject text = new TextObject("{=modbp002}{PATROLNAME} has been wiped out by {DESTROYERNAME}.");
                             text.SetTextVariable("PATROLNAME", patrol.Name);
                             text.SetTextVariable("DESTROYERNAME", destroyerParty.Name);
                             InformationManager.DisplayMessage(new InformationMessage(text.ToString(), new Color(255 / 255, 128 / 255, 0)));
