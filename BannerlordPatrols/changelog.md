@@ -1,4 +1,7 @@
-﻿Version 1.2.5:
+﻿Version 1.2.6:
+- Fixed translation ids.
+
+Version 1.2.5:
 - Fixed stuttering issue.
 
 Version 1.2.4:
