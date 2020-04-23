@@ -58,7 +58,7 @@ namespace BuyPatrols
         public float AddPatrolSpeed { get; set; } = 3.5f;
 
 
-        [SettingProperty("{=modbpoption001}Base Cost to Patrols", 0, 50000, false, hintText: "{=modbpoption001}The base cost to patrols. The total cost of hiring a patrol is a combination of base cost + hearth or base cost + prosperity.")]
+        [SettingProperty("{=modbpoption058}Base Cost to Patrols", 0, 50000, false, hintText: "{=modbpoption059}The base cost to patrols. The total cost of hiring a patrol is a combination of base cost + hearth or base cost + prosperity.")]
         [SettingPropertyGroup("{=modbpoptionPatrolSettings}Patrol Settings")]
         public int BaseCost { get; set; } = 1250;
 
@@ -83,7 +83,7 @@ namespace BuyPatrols
         public int MaxPatrolCountPerCastle { get; set; } = 3;
 
         [SettingProperty("{=modbpoption028}Patrols per Town", 0, 30, false, hintText: "{=modbpoption029}Modifies the max amount of patrols per town.")]
-        [SettingPropertyGroup("{=modbpoption001}Patrol Settings")]
+        [SettingPropertyGroup("{=modbpoptionPatrolSettings}Patrol Settings")]
         public int MaxPatrolCountPerTown{ get; set; } = 1;
 
 

@@ -94,5 +94,7 @@
     <string id="modbpoption055" text="The bonus speed that will be added to AI hired patrols."/>
     <string id="modbpoption056" text="Max Patrols Per Settlement"/>
     <string id="modbpoption057" text="The maximum amount of patrols the AI will hire per settlement."/>
+    <string id="modbpoption058" text="Base Cost to Patrols"/>
+    <string id="modbpoption059" text="The base cost to patrols. The total cost of hiring a patrol is a combination of base cost + hearth or base cost + prosperity."/>
   </strings>
 </base>
