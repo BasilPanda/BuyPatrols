@@ -1,4 +1,7 @@
-﻿Version 1.2.4:
+﻿Version 1.2.5:
+- Fixed stuttering issue.
+
+Version 1.2.4:
 - Added translation template for mod options.
 
 Version 1.2.3:
