@@ -18,6 +18,7 @@
     <string id="modbp012" text="Pay for a large patrol ({BASILPATROL_LARGE_COST}{GOLD_ICON})"/>
     <string id="modbp013" text="Disband all patrols"/>
     <string id="modbp014" text="Leave"/>
+    <string id="modbp015" text="Patrol"/>
     <string id="modbp016" text="Hello my lord. What do you need us to do?"/>
     <string id="modbp017" text="Donate Troops"/>
     <string id="modbp018" text="Disband."/>
@@ -33,6 +34,9 @@
     <string id="modbp028" text="Stop right there! You're an enemy of {BASILPATROLS_LIEGE} and we shall capture you."/>
     <string id="modbp029" text="We can do this the easy way or the hard way."/>
     <string id="modbpoptionPatrolSettings" text="Patrol Settings"/>
+    <string id="modbpoptionRelationSettings" text="Relation Settings"/>
+    <string id="modbpoptionMiscSettings" text="Miscellaneous"/>
+    <string id="modbpoptionAISettings" text="Ai Hiring Settings"/>
     <string id="modbpoption001" text=" Removal Settings"/>
     <string id="modbpoption002" text="REMOVE ALL PATROLS"/>
     <string id="modbpoption003" text="When enabled, will attempt to delete ALL patrols that aren't engaging a party. This might take several days. Will notify the number of patrols left and destroyed."/>
@@ -72,6 +76,23 @@
     <string id="modbpoption037" text="The relation cap for having patrols per notable. Relation gain will stop after reaching this value."/>
     <string id="modbpoption038" text="Force Troop Capacity"/>
     <string id="modbpoption039" text="When enabled, forces patrols to be capped at large patrol size. Will randomly remove troops over the large patrol size."/>
-    
+    <string id="modbpoption040" text="Patrol Regeneration"/>
+    <string id="modbpoption041" text="When enabled, allows patrols to slowly regenerate on a daily basis up to large size."/>
+    <string id="modbpoption042" text="Patrol Tether Range"/>
+    <string id="modbpoption043" text="The maximum distance a patrol will go before being pulled back to their home settlement."/>
+    <string id="modbpoption044" text="Other Lords Hire"/>
+    <string id="modbpoption045" text="When enabled, other lords will try to hire patrols for their villages."/>
+    <string id="modbpoption046" text="Patrol Hiring Chance"/>
+    <string id="modbpoption047" text="The daily chance that other lords will hire a patrol per village if it is below the settlement limit."/>
+    <string id="modbpoption048" text="Hearth Limit"/>
+    <string id="modbpoption049" text="If a village's hearth is below this number, the lord will run the chance to spawn a patrol for it."/>
+    <string id="modbpoption050" text="Castle Prosperity Limit"/>
+    <string id="modbpoption051" text="If a castle's prosperity is below this number, the lord will run the chance to spawn a patrol for it."/>
+    <string id="modbpoption052" text="Town Prosperity Limit"/>
+    <string id="modbpoption053" text="If a town's prosperity is below this number, the lord will run the chance to spawn a patrol for it."/>
+    <string id="modbpoption054" text="Patrol Bonus Speed"/>
+    <string id="modbpoption055" text="The bonus speed that will be added to AI hired patrols."/>
+    <string id="modbpoption056" text="Max Patrols Per Settlement"/>
+    <string id="modbpoption057" text="The maximum amount of patrols the AI will hire per settlement."/>
   </strings>
 </base>

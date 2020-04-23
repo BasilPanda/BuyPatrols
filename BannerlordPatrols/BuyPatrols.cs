@@ -39,7 +39,7 @@ namespace BuyPatrols
         public int MaxPatrolCountPerTown = Settings.Instance.MaxPatrolCountPerTown;
         public int RelationCap = Settings.Instance.RelationCap;
         public int MaxTotalPatrols = Settings.Instance.MaxTotalPatrols;
-        public TextObject patrolWord = new TextObject("Patrol");
+        public TextObject patrolWord = new TextObject("{=modbp015}Patrol");
         #endregion
 
         private void OnSessionLaunched(CampaignGameStarter obj)
@@ -589,7 +589,7 @@ namespace BuyPatrols
             MobileParty mobileParty = MBObjectManager.Instance.CreateObject<MobileParty>(settlement.OwnerClan.StringId + "_" + numberOfCreated);
 
             TextObject textObject;
-            textObject = new TextObject("{BASILPATROL_SETTLEMENT_NAME} Patrol", null);
+            textObject = new TextObject("{BASILPATROL_SETTLEMENT_NAME} "+ patrolWord, null);
             textObject.SetTextVariable("BASILPATROL_SETTLEMENT_NAME", settlement.Name);
             mobileParty.InitializeMobileParty(textObject, partyTemplate, settlement.GatePosition, 2, 0, 0, rand.Next((int)(amount*0.9), (int)Math.Ceiling((amount + 1)*1.1)));
             InitPatrolParty(mobileParty, textObject, settlement.OwnerClan, settlement);
@@ -604,7 +604,7 @@ namespace BuyPatrols
             partyTemplate.IncrementNumberOfCreated();
             MobileParty mobileParty = MBObjectManager.Instance.CreateObject<MobileParty>(clan.StringId + "_" + numberOfCreated);
             TextObject textObject;
-            textObject = new TextObject("{BASILPATROL_SETTLEMENT_NAME} Patrol", null);
+            textObject = new TextObject("{BASILPATROL_SETTLEMENT_NAME} " + patrolWord, null);
             textObject.SetTextVariable("BASILPATROL_SETTLEMENT_NAME", settlement.Name);
             mobileParty.InitializeMobileParty(textObject, partyTemplate, settlement.GatePosition, 2, 0, 0, rand.Next((int)(amount * 0.9), (int)Math.Ceiling((amount + 1) * 1.1)));
             InitPatrolParty(mobileParty, textObject, clan, settlement);

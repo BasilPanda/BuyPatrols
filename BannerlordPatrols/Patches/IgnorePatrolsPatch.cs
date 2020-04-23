@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.SandBox.CampaignBehaviors;
+using TaleWorlds.Localization;
 
 namespace BuyPatrols
 {
@@ -12,11 +13,13 @@ namespace BuyPatrols
     [HarmonyPatch(typeof(MilitiasCampaignBehavior), "HourlyTick")]
     class IgnorePatrolsPatch
     {
+        public static TextObject patrolWord = new TextObject("{=modbp015}Patrol");
+
         static bool Prefix(MilitiasCampaignBehavior __instance)
         {
             foreach (MobileParty mobileParty in MilitiasCampaignBehavior.MilitiaParties)
             {
-                if (mobileParty.IsActive && !mobileParty.Name.ToString().EndsWith("Patrol"))
+                if (mobileParty.IsActive && !mobileParty.Name.ToString().EndsWith(patrolWord.ToString()))
                 {
                     CheckProvocation(mobileParty);
                     if (mobileParty.MapEvent == null && mobileParty.CurrentSettlement == null && mobileParty.HomeSettlement.GetComponent<Town>() != null)

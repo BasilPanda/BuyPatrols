@@ -1,4 +1,10 @@
-﻿**Version 1.2.2**
+﻿Version 1.2.4:
+- Added translation template for mod options.
+
+Version 1.2.3:
+- Added languages folder for translations.
+
+**Version 1.2.2**																																											
 - Due to duplication bug, patrols no longer store prisoners in settlements and instead sell them off automatically when they go to a settlement and take the money themselves. (This should fix duplicating lords)
 - Duplication removal now runs daily and should keep the original lord alive to prevent crashing.
 
