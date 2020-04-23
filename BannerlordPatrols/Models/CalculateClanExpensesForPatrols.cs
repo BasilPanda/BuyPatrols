@@ -13,8 +13,6 @@ namespace BuyPatrols
 {
     class CalculateClanExpensesForPatrols : DefaultClanFinanceModel
     {
-        public TextObject patrolWord = new TextObject("{=modbp015}Patrol");
-
         public override void CalculateClanExpenses(Clan clan, ref ExplainedNumber goldChange, bool applyWithdrawals = false)
         {
             base.CalculateClanExpenses(clan, ref goldChange, applyWithdrawals);
@@ -25,7 +23,7 @@ namespace BuyPatrols
             {
                 partyWage = 0;
                 payAmount = 0;
-                if (party.Name.ToString().EndsWith(patrolWord.ToString()))
+                if (party.Name.ToString().EndsWith("{=modbp015}Patrol"))
                 {
                     partyWage = (int)(party.GetTotalWage() * Settings.Instance.DailyPatrolWageModifier);
                     total += partyWage;

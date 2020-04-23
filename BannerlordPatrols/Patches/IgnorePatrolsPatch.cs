@@ -13,13 +13,12 @@ namespace BuyPatrols
     [HarmonyPatch(typeof(MilitiasCampaignBehavior), "HourlyTick")]
     class IgnorePatrolsPatch
     {
-        public static TextObject patrolWord = new TextObject("{=modbp015}Patrol");
 
         static bool Prefix(MilitiasCampaignBehavior __instance)
         {
             foreach (MobileParty mobileParty in MilitiasCampaignBehavior.MilitiaParties)
             {
-                if (mobileParty.IsActive && !mobileParty.Name.ToString().EndsWith(patrolWord.ToString()))
+                if (mobileParty.IsActive && !mobileParty.Name.Contains("{=modbp015}Patrol"))
                 {
                     CheckProvocation(mobileParty);
                     if (mobileParty.MapEvent == null && mobileParty.CurrentSettlement == null && mobileParty.HomeSettlement.GetComponent<Town>() != null)

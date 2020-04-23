@@ -1,5 +1,6 @@
 ﻿using MBOptionScreen.Settings;
 using MBOptionScreen.Attributes;
+using TaleWorlds.Localization;
 
 namespace BuyPatrols
 {

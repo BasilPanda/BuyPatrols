@@ -589,7 +589,7 @@ namespace BuyPatrols
             MobileParty mobileParty = MBObjectManager.Instance.CreateObject<MobileParty>(settlement.OwnerClan.StringId + "_" + numberOfCreated);
 
             TextObject textObject;
-            textObject = new TextObject("{BASILPATROL_SETTLEMENT_NAME} "+ patrolWord, null);
+            textObject = new TextObject("{BASILPATROL_SETTLEMENT_NAME} " + patrolWord, null);
             textObject.SetTextVariable("BASILPATROL_SETTLEMENT_NAME", settlement.Name);
             mobileParty.InitializeMobileParty(textObject, partyTemplate, settlement.GatePosition, 2, 0, 0, rand.Next((int)(amount*0.9), (int)Math.Ceiling((amount + 1)*1.1)));
             InitPatrolParty(mobileParty, textObject, settlement.OwnerClan, settlement);
@@ -649,105 +649,103 @@ namespace BuyPatrols
         {
             
             PatrolProperties patrolProperties;
-            foreach(Settlement settlement in Settlement.All)
+            foreach(string settlementID in settlementPatrolProperties.Keys.ToList())
             {
-                if (settlement.IsVillage || settlement.IsCastle || settlement.IsTown)
+                settlementPatrolProperties.TryGetValue(settlementID, out patrolProperties);
+                patrolProperties.patrols.RemoveAll(x => x.MemberRoster.IsEmpty());
+                allPatrols.RemoveAll(x => x.MemberRoster.IsEmpty());
+                bool flag = true;
+                foreach (MobileParty patrol in patrolProperties.patrols.ToList())
                 {
-                    settlementPatrolProperties.TryGetValue(settlement.StringId, out patrolProperties);
-                    patrolProperties.patrols.RemoveAll(x => x.MemberRoster.IsEmpty());
-                    allPatrols.RemoveAll(x => x.MemberRoster.IsEmpty());
-                    bool flag = true;
-                    foreach (MobileParty patrol in patrolProperties.patrols.ToList())
+                    patrol.Aggressiveness = 0;
+                    flag = true;
+                    // Prisoner Section
+                    Settlement closestTown = Util.FindClosestTown(patrol);
+                    if (closestTown != null)
                     {
-                        patrol.Aggressiveness = 0;
-                        flag = true;
-                        // Prisoner Section
-                        Settlement closestTown = Util.FindClosestTown(patrol);
-                        if (closestTown != null)
+                        patrol.SetMoveGoToSettlement(closestTown);
+                        continue;
+                    }
+                    // Engage/Disband section
+                    if (patrol.DefaultBehavior == AiBehavior.EngageParty || patrol.DefaultBehavior == AiBehavior.FleeToPoint || patrol.IsGoingToSettlement)
+                    {
+                        if (patrol.DefaultBehavior == AiBehavior.EngageParty)
                         {
-                            patrol.SetMoveGoToSettlement(closestTown);
-                            continue;
-                        }
-                        // Engage/Disband section
-                        if (patrol.DefaultBehavior == AiBehavior.EngageParty || patrol.DefaultBehavior == AiBehavior.FleeToPoint || patrol.IsGoingToSettlement)
-                        {
-                            if (patrol.DefaultBehavior == AiBehavior.EngageParty)
+                            if (patrol.IsGoingToSettlement && patrol.IsDisbanding && closestTown == null)
                             {
-                                if (patrol.IsGoingToSettlement && patrol.IsDisbanding && closestTown == null)
-                                {
-                                    patrol.SetMoveGoToSettlement(closestTown);
-                                }
-                                else if (d.GetDistance(patrol, patrol.HomeSettlement) > PatrolTetherRange)
-                                {
-                                    patrol.SetMoveGoToPoint(patrol.HomeSettlement.GatePosition);
-                                }
-                                else if (patrol.TargetParty == MobileParty.MainParty && patrol.HomeSettlement.OwnerClan == Clan.PlayerClan)
-                                {
-                                    patrol.Party.Owner = Hero.MainHero;
-                                    patrol.SetMovePatrolAroundSettlement(patrol.HomeSettlement);
-                                }
-                                else if (patrol.TargetParty != null)
-                                {
-                                    if (!patrol.MapFaction.IsAtWarWith(patrol.TargetParty.MapFaction))
-                                    {
-                                        patrol.SetMovePatrolAroundSettlement(patrol.HomeSettlement);
-                                    }
-                                } 
-
+                                patrol.SetMoveGoToSettlement(closestTown);
                             }
-                            if(patrol.IsGoingToSettlement && closestTown == null)
-                            {
-                                if (!patrol.IsDisbanding && d.GetDistance(patrol, patrol.HomeSettlement) <= 5)
-                                {
-                                    patrol.SetMovePatrolAroundSettlement(patrol.HomeSettlement);
-                                }
-                            }
-                            continue;
-                        }
-                        if (!patrol.IsMoving)
-                        {
-                            patrol.SetMovePatrolAroundSettlement(patrol.HomeSettlement);
-                            continue;
-                        }
-
-                        // Target AI
-                        List<MobileParty> parties = partiesAroundPosition.GetPartiesAroundPosition(patrol.Position2D, 10f);
-                        foreach(MobileParty possibleEnemy in parties.ToList())
-                        {
-                            if(patrol.IsActive && possibleEnemy.MapFaction.IsAtWarWith(patrol.MapFaction) && possibleEnemy.IsActive && 
-                                !possibleEnemy.IsGarrison && (possibleEnemy.IsMoving || possibleEnemy.IsEngaging  || possibleEnemy.IsRaiding))
-
-                            {
-                                if (!TargetVillagers && possibleEnemy.IsVillager)
-                                {
-                                    continue;
-                                }
-                                if(!TargetCaravans && possibleEnemy.IsCaravan)
-                                {
-                                    continue;
-                                }
-                                else if(patrol.Party.TotalStrength * 1.1 > possibleEnemy.Party.TotalStrength && possibleEnemy.Party.NumberOfHealthyMembers != 0)
-                                {
-                                    patrol.SetMoveEngageParty(possibleEnemy);
-                                    flag = false;
-                                    break;
-                                }
-                            }
-                        }
-                        if (flag)
-                        {
-                            if (d.GetDistance(patrol, patrol.HomeSettlement) > PatrolTetherRange)
+                            else if (d.GetDistance(patrol, patrol.HomeSettlement) > PatrolTetherRange)
                             {
                                 patrol.SetMoveGoToPoint(patrol.HomeSettlement.GatePosition);
-                            } else
+                            }
+                            else if (patrol.TargetParty == MobileParty.MainParty && patrol.HomeSettlement.OwnerClan == Clan.PlayerClan)
+                            {
+                                patrol.Party.Owner = Hero.MainHero;
+                                patrol.SetMovePatrolAroundSettlement(patrol.HomeSettlement);
+                            }
+                            else if (patrol.TargetParty != null)
+                            {
+                                if (!patrol.MapFaction.IsAtWarWith(patrol.TargetParty.MapFaction))
+                                {
+                                    patrol.SetMovePatrolAroundSettlement(patrol.HomeSettlement);
+                                }
+                            } 
+
+                        }
+                        if(patrol.IsGoingToSettlement && closestTown == null)
+                        {
+                            if (!patrol.IsDisbanding && d.GetDistance(patrol, patrol.HomeSettlement) <= 5)
                             {
                                 patrol.SetMovePatrolAroundSettlement(patrol.HomeSettlement);
                             }
                         }
+                        continue;
                     }
-                    //allPatrols.AddRange(patrolProperties.patrols);
-                    settlementPatrolProperties[settlement.StringId] = patrolProperties;
+                    if (!patrol.IsMoving)
+                    {
+                        patrol.SetMovePatrolAroundSettlement(patrol.HomeSettlement);
+                        continue;
+                    }
+
+                    // Target AI
+                    List<MobileParty> parties = partiesAroundPosition.GetPartiesAroundPosition(patrol.Position2D, 10f);
+                    foreach(MobileParty possibleEnemy in parties.ToList())
+                    {
+                        if(patrol.IsActive && possibleEnemy.MapFaction.IsAtWarWith(patrol.MapFaction) && possibleEnemy.IsActive && 
+                            !possibleEnemy.IsGarrison && (possibleEnemy.IsMoving || possibleEnemy.IsEngaging  || possibleEnemy.IsRaiding))
+
+                        {
+                            if (!TargetVillagers && possibleEnemy.IsVillager)
+                            {
+                                continue;
+                            }
+                            if(!TargetCaravans && possibleEnemy.IsCaravan)
+                            {
+                                continue;
+                            }
+                            else if(patrol.Party.TotalStrength * 1.1 > possibleEnemy.Party.TotalStrength && possibleEnemy.Party.NumberOfHealthyMembers != 0)
+                            {
+                                patrol.SetMoveEngageParty(possibleEnemy);
+                                flag = false;
+                                break;
+                            }
+                        }
+                    }
+                    if (flag)
+                    {
+                        if (d.GetDistance(patrol, patrol.HomeSettlement) > PatrolTetherRange)
+                        {
+                            patrol.SetMoveGoToPoint(patrol.HomeSettlement.GatePosition);
+                        } else
+                        {
+                            patrol.SetMovePatrolAroundSettlement(patrol.HomeSettlement);
+                        }
+                    }
                 }
+                //allPatrols.AddRange(patrolProperties.patrols);
+                settlementPatrolProperties[settlementID] = patrolProperties;
+                
             }
             
         }
@@ -756,32 +754,30 @@ namespace BuyPatrols
         {
             //KillUnknownBehaviorParties();
             PatrolProperties patrolProperties;
-            foreach (Settlement settlement in Settlement.All)
+            foreach (string settlementID in settlementPatrolProperties.Keys.ToList())
             {
-                if(settlement.IsVillage || settlement.IsCastle)
-                {
-                    settlementPatrolProperties.TryGetValue(settlement.StringId, out patrolProperties);
-                    patrolProperties.patrols.RemoveAll(x => x.MemberRoster.IsEmpty());
-                    allPatrols.RemoveAll(x => x.MemberRoster.IsEmpty());
+                settlementPatrolProperties.TryGetValue(settlementID, out patrolProperties);
+                patrolProperties.patrols.RemoveAll(x => x.MemberRoster.IsEmpty());
+                allPatrols.RemoveAll(x => x.MemberRoster.IsEmpty());
 
-                    foreach (MobileParty patrol in patrolProperties.patrols.ToList())
+                foreach (MobileParty patrol in patrolProperties.patrols.ToList())
+                {
+                    if (patrol.Food <= 3)
                     {
-                        if (patrol.Food <= 3)
-                        {
-                            GenerateFood(patrol);
-                        }
-                        if (patrol.Party.NumberOfAllMembers > TroopsPerPatrol * 3 * 1.1 && ForceTroopCapEnabled)
-                        {
-                            patrol.MemberRoster.KillNumberOfMenRandomly((int)Math.Floor(patrol.MemberRoster.Count - TroopsPerPatrol * 3 * 1.1), false);
-                        }
-                        if (patrol.Party.NumberOfAllMembers < TroopsPerPatrol * 3 * 1.1 && ForceRegenPatrol)
-                        {
-                            patrol.AddElementToMemberRoster(patrol.Party.Culture.BasicTroop, 1, false);
-                        }
+                        GenerateFood(patrol);
                     }
-                    //allPatrols.AddRange(patrolProperties.patrols);
-                    settlementPatrolProperties[settlement.StringId] = patrolProperties;
+                    if (patrol.Party.NumberOfAllMembers > TroopsPerPatrol * 3 * 1.1 && ForceTroopCapEnabled)
+                    {
+                        patrol.MemberRoster.KillNumberOfMenRandomly((int)Math.Floor(patrol.MemberRoster.Count - TroopsPerPatrol * 3 * 1.1), false);
+                    }
+                    if (patrol.Party.NumberOfAllMembers < TroopsPerPatrol * 3 * 1.1 && ForceRegenPatrol)
+                    {
+                        patrol.AddElementToMemberRoster(patrol.Party.Culture.BasicTroop, 1, false);
+                    }
                 }
+                //allPatrols.AddRange(patrolProperties.patrols);
+                settlementPatrolProperties[settlementID] = patrolProperties;
+                
             }
         }
 
@@ -789,17 +785,17 @@ namespace BuyPatrols
         {
             int totalWages = 0;
             PatrolProperties patrolProperties;
-            foreach (Settlement settlement in Settlement.All)
+            foreach (string settlementID in settlementPatrolProperties.Keys.ToList())
             {
-                if ((settlement.IsVillage || settlement.IsCastle) && settlement.OwnerClan == Clan.PlayerClan)
+                settlementPatrolProperties.TryGetValue(settlementID, out patrolProperties);
+                if (patrolProperties.getSettlement().OwnerClan == Clan.PlayerClan)
                 {
-                    settlementPatrolProperties.TryGetValue(settlement.StringId, out patrolProperties);
                     foreach (MobileParty patrol in patrolProperties.patrols.ToList())
                     {
                         GiveGoldAction.ApplyForCharacterToParty(Hero.MainHero, patrol.Party, (int)(patrol.GetTotalWage() * DailyPatrolWageModifier), true);
                         totalWages += (int)(patrol.GetTotalWage() * DailyPatrolWageModifier);
                     }
-                    settlementPatrolProperties[settlement.StringId] = patrolProperties;
+                    settlementPatrolProperties[settlementID] = patrolProperties;
                 }
             }
             if (totalWages > 0)
@@ -830,14 +826,14 @@ namespace BuyPatrols
         {
             PatrolProperties patrolProperties;
             bool flag = false;
-            foreach (Settlement settlement in Settlement.All)
+            foreach (string settlementID in settlementPatrolProperties.Keys.ToList())
             {
-                if (settlement.IsVillage)
+                settlementPatrolProperties.TryGetValue(settlementID, out patrolProperties);
+                if (patrolProperties.getSettlement().IsVillage || patrolProperties.getSettlement().IsTown)
                 {
-                    settlementPatrolProperties.TryGetValue(settlement.StringId, out patrolProperties);
-                    if (patrolProperties.patrols.Count > 0 && settlement.OwnerClan == Clan.PlayerClan)
+                    if (patrolProperties.patrols.Count > 0 && patrolProperties.getSettlement().OwnerClan == Clan.PlayerClan)
                     {
-                        foreach (Hero notable in settlement.Notables)
+                        foreach (Hero notable in patrolProperties.getSettlement().Notables)
                         {
                             if(notable.GetRelationWithPlayer() < RelationCap)
                             {
