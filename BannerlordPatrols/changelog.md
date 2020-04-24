@@ -1,4 +1,10 @@
-﻿Version 1.2.6:
+﻿Version 1.2.8:
+- Fixed patrol tether range
+
+Version 1.2.7:
+- Fixed patrol wages not showing up in hint box (this won't work if using a different language at the moment)
+
+Version 1.2.6:
 - Fixed translation ids.
 
 Version 1.2.5:
