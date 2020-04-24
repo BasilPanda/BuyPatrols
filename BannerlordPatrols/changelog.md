@@ -1,4 +1,11 @@
-﻿Version 1.2.8:
+﻿Version 1.3.1:
+- Added AI patrol limit option based on AI lord clan tier.
+
+Version 1.3.0:
+- Updated for beta branch e1.3.0
+- Tested on beta branch e1.3.0 (I do not know if it is compatible with stable branch e1.2.0 since they changed things internally. Previous mod versions should be fine with e1.2.0)
+
+Version 1.2.8:
 - Fixed patrol tether range
 
 Version 1.2.7:

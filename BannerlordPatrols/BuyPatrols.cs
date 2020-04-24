@@ -12,6 +12,7 @@ using TaleWorlds.CampaignSystem.ViewModelCollection;
 using TaleWorlds.CampaignSystem.SandBox.GameComponents.Map;
 using TaleWorlds.Library;
 using TaleWorlds.CampaignSystem.SandBox.Conversations;
+using TaleWorlds.ObjectSystem;
 
 namespace BuyPatrols
 {
@@ -46,7 +47,8 @@ namespace BuyPatrols
         {
             if (Settings.Instance.NukeAllPatrols)
             {
-                InformationManager.DisplayMessage(new InformationMessage("{=modbp001}BuyPatrols WARNING: DESTROYING ALL PATROLS DAILY OPTION ENABLED.", Colors.Red));
+                TextObject warning = new TextObject("{=modbp001}BuyPatrols WARNING: DESTROYING ALL PATROLS DAILY OPTION ENABLED.");
+                InformationManager.DisplayMessage(new InformationMessage(warning.ToString(), Colors.Red));
             }
             TrackPatrols();
             try
@@ -1032,7 +1034,9 @@ namespace BuyPatrols
             if (settlementPatrolProperties.ContainsKey(settlement.StringId))
             {
                 settlementPatrolProperties.TryGetValue(settlement.StringId, out properties);
-                if (properties != null && properties.patrols.Count < Settings.Instance.AiMaxPatrolPerSettlement && settlement.OwnerClan.Gold > (BaseCost + properties.getPatrolCost()) * 3)
+                if (properties != null && properties.patrols.Count < Settings.Instance.AiMaxPatrolPerSettlement && 
+                    settlement.OwnerClan.Gold > (BaseCost + properties.getPatrolCost()) * 3 &&
+                    Util.GetNumPatrolsOfClan(settlement.OwnerClan, settlementPatrolProperties) <= Settings.Instance.AiPatrolCapPerClanTier * settlement.OwnerClan.Tier)
                 {
                     if (rand.Next(0, 100) <= Settings.Instance.AiGenerationChance)
                     {

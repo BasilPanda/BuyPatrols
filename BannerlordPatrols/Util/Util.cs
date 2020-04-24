@@ -40,5 +40,19 @@ namespace BuyPatrols
             return settlement;
         }
 
+        public static int GetNumPatrolsOfClan(Clan clan, Dictionary<string, PatrolProperties> settlementPatrolsProperties)
+        {
+            PatrolProperties props;
+            int count = 0;
+            foreach (string id in settlementPatrolsProperties.Keys.ToList())
+            {
+                settlementPatrolsProperties.TryGetValue(id, out props);
+                if (props.getSettlement().OwnerClan == clan)
+                {
+                    count += props.getPatrolCount();
+                }
+            }
+            return count;
+        }
     }
 }

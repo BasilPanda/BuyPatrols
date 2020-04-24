@@ -163,6 +163,11 @@ namespace BuyPatrols
         [SettingProperty("{=modbpoption056}Max Patrols Per Settlement", 0, 10, false, hintText: "{=modbpoption057}The maximum amount of patrols the AI will hire per settlement.")]
         [SettingPropertyGroup("{=modbpoptionAISettings}Ai Hiring Settings")]
         public int AiMaxPatrolPerSettlement { get; set; } = 1;
+
+        [SettingProperty("{=modbpoption060}Patrol Cap Clan Tier", 0, 10, false, hintText: "{=modbpoption061}The maximum amount of patrols the AI will hire under their clan based on their clan tier. This number * Clan Tier")]
+        [SettingPropertyGroup("{=modbpoptionAISettings}Ai Hiring Settings")]
+        public int AiPatrolCapPerClanTier { get; set; } = 2;
+
         #endregion
     }
 
