@@ -1,5 +1,7 @@
 ﻿Version 1.3.1:
-- Added AI patrol limit option based on AI lord clan tier.
+- Updated to MBOptionScreen v2.0.4
+- AI is now also limited to hiring patrols based on their clan tier.
+- Added AI additional patrol limit config setting.
 
 Version 1.3.0:
 - Updated for beta branch e1.3.0
