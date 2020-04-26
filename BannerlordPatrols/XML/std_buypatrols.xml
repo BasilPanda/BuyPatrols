@@ -96,7 +96,7 @@
     <string id="modbpoption057" text="The maximum amount of patrols the AI will hire per settlement."/>
     <string id="modbpoption058" text="Base Cost to Patrols"/>
     <string id="modbpoption059" text="The base cost to patrols. The total cost of hiring a patrol is a combination of base cost + hearth or base cost + prosperity."/>
-    <string id="modbpoption060" text="Patrol Cap Clan Tier"/>
-    <string id="modbpoption061" text="The maximum amount of patrols the AI will hire based on their clan tier. This number * Clan Tier"/>
+    <string id="modbpoption060" text="Additional Patrols"/>
+    <string id="modbpoption061" text="The base amount of patrols the AI will hire under their clan. This is added to their current clan tier for the cap."/>
   </strings>
 </base>

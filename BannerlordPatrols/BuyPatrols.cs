@@ -593,23 +593,17 @@ namespace BuyPatrols
             TextObject textObject;
             textObject = new TextObject("{BASILPATROL_SETTLEMENT_NAME} " + patrolWord, null);
             textObject.SetTextVariable("BASILPATROL_SETTLEMENT_NAME", settlement.Name);
-            mobileParty.InitializeMobileParty(textObject, partyTemplate, settlement.GatePosition, 2, 0, 0, rand.Next((int)(amount*0.9), (int)Math.Ceiling((amount + 1)*1.1)));
+            if (Settings.Instance.UseMilitia)
+            {
+                int veterans = (int)Math.Ceiling((double)amount / 4);
+                mobileParty.InitializeMobileParty(textObject, partyTemplate, settlement.GatePosition, 2, 0, 0, rand.Next((int)(amount * 0.9 - veterans), (int)Math.Ceiling((amount + 1 - veterans) * 1.1)));
+                mobileParty.AddElementToMemberRoster(settlement.Culture.MilitiaVeteranArcher,(int)Math.Floor((double)veterans / 2), true);
+                mobileParty.AddElementToMemberRoster(settlement.Culture.MilitiaVeteranSpearman, (int)Math.Ceiling((double)veterans / 2), true);
+            } else
+            {
+                mobileParty.InitializeMobileParty(textObject, partyTemplate, settlement.GatePosition, 2, 0, 0, rand.Next((int)(amount * 0.9), (int)Math.Ceiling((amount + 1) * 1.1)));
+            }
             InitPatrolParty(mobileParty, textObject, settlement.OwnerClan, settlement);
-            mobileParty.SetMovePatrolAroundSettlement(settlement);
-            return mobileParty;
-        }
-
-        public MobileParty spawnPatrol(Settlement settlement, Clan clan, int amount)
-        {
-            PartyTemplateObject partyTemplate = clan.Culture.DefaultPartyTemplate;
-            int numberOfCreated = partyTemplate.NumberOfCreated;
-            partyTemplate.IncrementNumberOfCreated();
-            MobileParty mobileParty = MBObjectManager.Instance.CreateObject<MobileParty>(clan.StringId + "_" + numberOfCreated);
-            TextObject textObject;
-            textObject = new TextObject("{BASILPATROL_SETTLEMENT_NAME} " + patrolWord, null);
-            textObject.SetTextVariable("BASILPATROL_SETTLEMENT_NAME", settlement.Name);
-            mobileParty.InitializeMobileParty(textObject, partyTemplate, settlement.GatePosition, 2, 0, 0, rand.Next((int)(amount * 0.9), (int)Math.Ceiling((amount + 1) * 1.1)));
-            InitPatrolParty(mobileParty, textObject, clan, settlement);
             mobileParty.SetMovePatrolAroundSettlement(settlement);
             return mobileParty;
         }
@@ -1036,7 +1030,7 @@ namespace BuyPatrols
                 settlementPatrolProperties.TryGetValue(settlement.StringId, out properties);
                 if (properties != null && properties.patrols.Count < Settings.Instance.AiMaxPatrolPerSettlement && 
                     settlement.OwnerClan.Gold > (BaseCost + properties.getPatrolCost()) * 3 &&
-                    Util.GetNumPatrolsOfClan(settlement.OwnerClan, settlementPatrolProperties) <= Settings.Instance.AiPatrolCapPerClanTier * settlement.OwnerClan.Tier)
+                    Util.GetNumPatrolsOfClan(settlement.OwnerClan, settlementPatrolProperties) <= Settings.Instance.AiAdditionalPatrolToClan + settlement.OwnerClan.Tier)
                 {
                     if (rand.Next(0, 100) <= Settings.Instance.AiGenerationChance)
                     {

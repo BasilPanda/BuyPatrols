@@ -53,8 +53,8 @@
     <Reference Include="0Harmony, Version=2.0.0.10, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Lib.Harmony.2.0.0.10\lib\net472\0Harmony.dll</HintPath>
     </Reference>
-    <Reference Include="MBOptionScreen, Version=1.1.15.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Bannerlord.MBOptionScreen.1.1.15\lib\net472\MBOptionScreen.dll</HintPath>
+    <Reference Include="MBOptionScreen.v2.0.4, Version=2.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Bannerlord.MBOptionScreen.2.0.4\lib\net472\MBOptionScreen.v2.0.4.dll</HintPath>
     </Reference>
     <Reference Include="SandBox">
       <HintPath>F:\SteamLibrary\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\SandBox\bin\Win64_Shipping_Client\SandBox.dll</HintPath>
@@ -310,7 +310,9 @@
     <Compile Include="Util\Util.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="SubModule.xml" />
+    <Content Include="SubModule.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="XML\std_buypatrols.xml" />
   </ItemGroup>
   <ItemGroup>

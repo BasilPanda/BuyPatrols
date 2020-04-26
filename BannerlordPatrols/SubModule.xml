@@ -2,7 +2,7 @@
 <Module>
   <Name value="BuyPatrols"/>
   <Id value="zzzBuyPatrols"/>
-  <Version value="v1.3.0"/>
+  <Version value="v1.3.1"/>
   <SingleplayerModule value="true"/>
   <MultiplayerModule value="false"/>
   <Official value="false" />
@@ -16,7 +16,7 @@
   <SubModules>
 	<SubModule>
 	  <Name value="MBOptionScreen" />
-	  <DLLName value="MBOptionScreen.dll" />
+	  <DLLName value="MBOptionScreen.v2.0.4.dll" />
 	  <SubModuleClassType value="MBOptionScreen.MBOptionScreenSubModule" />
 	  <Tags>
 		<Tag key="DedicatedServerType" value="none" />
