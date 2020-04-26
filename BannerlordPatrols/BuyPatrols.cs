@@ -593,17 +593,9 @@ namespace BuyPatrols
             TextObject textObject;
             textObject = new TextObject("{BASILPATROL_SETTLEMENT_NAME} " + patrolWord, null);
             textObject.SetTextVariable("BASILPATROL_SETTLEMENT_NAME", settlement.Name);
-            if (Settings.Instance.UseMilitia)
-            {
-                int veterans = (int)Math.Ceiling((double)amount / 4);
-                mobileParty.InitializeMobileParty(textObject, partyTemplate, settlement.GatePosition, 2, 0, 0, rand.Next((int)(amount * 0.9 - veterans), (int)Math.Ceiling((amount + 1 - veterans) * 1.1)));
-                mobileParty.AddElementToMemberRoster(settlement.Culture.MilitiaVeteranArcher,(int)Math.Floor((double)veterans / 2), true);
-                mobileParty.AddElementToMemberRoster(settlement.Culture.MilitiaVeteranSpearman, (int)Math.Ceiling((double)veterans / 2), true);
-            } else
-            {
-                mobileParty.InitializeMobileParty(textObject, partyTemplate, settlement.GatePosition, 2, 0, 0, rand.Next((int)(amount * 0.9), (int)Math.Ceiling((amount + 1) * 1.1)));
-            }
+            mobileParty.InitializeMobileParty(textObject, partyTemplate, settlement.GatePosition, 2, 0, 0, rand.Next((int)(amount * 0.9), (int)Math.Ceiling((amount + 1) * 1.1))); 
             InitPatrolParty(mobileParty, textObject, settlement.OwnerClan, settlement);
+
             mobileParty.SetMovePatrolAroundSettlement(settlement);
             return mobileParty;
         }
