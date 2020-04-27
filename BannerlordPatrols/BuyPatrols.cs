@@ -645,6 +645,16 @@ namespace BuyPatrols
                 bool flag = true;
                 foreach (MobileParty patrol in patrolProperties.patrols.ToList())
                 {
+                    if(patrol.MapEvent != null)
+                    {
+                        if (patrol.TargetParty != null)
+                        {
+                            if(patrol.TargetParty.Party.NumberOfHealthyMembers == 0)
+                            {
+                                patrol.MapEvent.FinishBattle();
+                            }
+                        }
+                    }
                     patrol.Aggressiveness = 0;
                     flag = true;
                     // Prisoner Section

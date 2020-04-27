@@ -7,7 +7,7 @@ namespace BuyPatrols
 {
     public class Settings : AttributeSettings<Settings>
     {
-        public override string Id { get; set; } = "BuyPatrolsSettings_v3";
+        public override string Id { get; set; } = "BuyPatrolsSettings_v4";
         public override string ModName => "Buy Patrols";
         public override string ModuleFolderName => "zzzBuyPatrols";
 
