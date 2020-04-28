@@ -1,4 +1,7 @@
-﻿Version 1.3.2:
+﻿Version 1.3.3:
+- Updated to Mod Configuration Menu v2.0.8 (formally MBOptionScreen)
+
+Version 1.3.2:
 - Updated to MBOptionScreen v2.0.6
 
 Version 1.3.1:
