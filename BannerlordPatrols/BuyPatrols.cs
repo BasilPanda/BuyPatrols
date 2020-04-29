@@ -1008,15 +1008,15 @@ namespace BuyPatrols
             {
                 if (settlement.OwnerClan != Clan.PlayerClan )
                 {
-                    if(settlement.IsVillage && settlement.Village.Hearth <= Settings.Instance.HearthMaximum)
+                    if(settlement.IsVillage && settlement.Village.Hearth <= Settings.Instance.HearthMaximum && Settings.Instance.AiVillagePatrols)
                     {
                         AiPatrolGeneration(settlement);
                     }
-                    else if (settlement.IsCastle && settlement.Prosperity <= Settings.Instance.AICastleProsperity)
+                    else if (settlement.IsCastle && settlement.Prosperity <= Settings.Instance.AICastleProsperity && Settings.Instance.AiCastlePatrols)
                     {
                         AiPatrolGeneration(settlement);
                     }
-                    else if (settlement.IsTown && settlement.Prosperity <= Settings.Instance.AITownProsperity)
+                    else if (settlement.IsTown && settlement.Prosperity <= Settings.Instance.AITownProsperity && Settings.Instance.AiTownPatrols)
                     {
                         AiPatrolGeneration(settlement);
                     }

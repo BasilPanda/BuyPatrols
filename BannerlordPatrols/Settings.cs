@@ -134,10 +134,21 @@ namespace BuyPatrols
 
         #region Lord Patrols
 
-        [SettingPropertyBool("{=modbpoption044}Other Lords Hire", Order = 0, RequireRestart = false, HintText =  "{=modbpoption045}When enabled, other lords will try to hire patrols for their villages.")]
+        [SettingPropertyBool("{=modbpoption044}Other Lords Hire", Order = 0, RequireRestart = false, HintText =  "{=modbpoption045}When enabled, other lords will try to hire patrols for their all of their settlements.")]
         [SettingPropertyGroup("{=modbpoptionAISettings}Ai Hiring Settings")]
         public bool AiHirePatrols { get; set; } = true;
 
+        [SettingPropertyBool("{=modbpoption062}Village", Order = 0, RequireRestart = false, HintText = "{=modbpoption063}When enabled, other lords will try to hire patrols for their villages.")]
+        [SettingPropertyGroup("{=modbpoptionAISettings}Ai Hiring Settings")]
+        public bool AiVillagePatrols { get; set; } = true;
+
+        [SettingPropertyBool("{=modbpoption064}Castle", Order = 0, RequireRestart = false, HintText = "{=modbpoption065}When enabled, other lords will try to hire patrols for their castles.")]
+        [SettingPropertyGroup("{=modbpoptionAISettings}Ai Hiring Settings")]
+        public bool AiCastlePatrols { get; set; } = true;
+
+        [SettingPropertyBool("{=modbpoption066}Town", Order = 0, RequireRestart = false, HintText = "{=modbpoption067}When enabled, other lords will try to hire patrols for their towns.")]
+        [SettingPropertyGroup("{=modbpoptionAISettings}Ai Hiring Settings")]
+        public bool AiTownPatrols { get; set; } = true;
 
         [SettingPropertyInteger("{=modbpoption046}Patrol Hiring Chance", 1, 100, Order = 1, RequireRestart = false, HintText =  "{=modbpoption047}The daily chance that other lords will hire a patrol per village if it is below the settlement limit.")]
         [SettingPropertyGroup("{=modbpoptionAISettings}Ai Hiring Settings")]

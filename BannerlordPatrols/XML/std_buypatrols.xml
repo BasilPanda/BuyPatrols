@@ -81,7 +81,7 @@
     <string id="modbpoption042" text="Patrol Tether Range"/>
     <string id="modbpoption043" text="The maximum distance a patrol will go before being pulled back to their home settlement."/>
     <string id="modbpoption044" text="Other Lords Hire"/>
-    <string id="modbpoption045" text="When enabled, other lords will try to hire patrols for their villages."/>
+    <string id="modbpoption045" text="When enabled, other lords will try to hire patrols for their all of their settlements."/>
     <string id="modbpoption046" text="Patrol Hiring Chance"/>
     <string id="modbpoption047" text="The daily chance that other lords will hire a patrol per village if it is below the settlement limit."/>
     <string id="modbpoption048" text="Hearth Limit"/>
@@ -98,5 +98,11 @@
     <string id="modbpoption059" text="The base cost to patrols. The total cost of hiring a patrol is a combination of base cost + hearth or base cost + prosperity."/>
     <string id="modbpoption060" text="Additional Patrols"/>
     <string id="modbpoption061" text="The base amount of patrols the AI will hire under their clan. This is added to their current clan tier for the cap."/>
+    <string id="modbpoption062" text="Village"/>
+    <string id="modbpoption063" text="When enabled, other lords will try to hire patrols for their villages."/>
+    <string id="modbpoption064" text="Castle"/>
+    <string id="modbpoption065" text="When enabled, other lords will try to hire patrols for their castles."/>
+    <string id="modbpoption066" text="Town"/>
+    <string id="modbpoption067" text="When enabled, other lords will try to hire patrols for their towns."/>
   </strings>
 </base>
