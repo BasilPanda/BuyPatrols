@@ -1,4 +1,8 @@
-﻿Version 1.3.3:
+﻿Version 1.3.4:
+- Updated to Mod Configuration Menu v2.0.10
+- Added options for AI to toggle hiring for village and walled settlements.
+
+Version 1.3.3:
 - Updated to Mod Configuration Menu v2.0.8 (formally MBOptionScreen)
 
 Version 1.3.2:
