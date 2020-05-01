@@ -301,6 +301,7 @@
   <ItemGroup>
     <Compile Include="BuyPatrols.cs" />
     <Compile Include="BuyPatrolsSubmodule.cs" />
+    <Compile Include="DelayedProperties.cs" />
     <Compile Include="Models\CalculateClanExpensesForPatrols.cs" />
     <Compile Include="Patches\PartySpeedModelForPatrols.cs" />
     <Compile Include="PatrolProperties.cs" />

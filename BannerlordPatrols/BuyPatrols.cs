@@ -19,6 +19,7 @@ namespace BuyPatrols
     public class BuyPatrols : CampaignBehaviorBase
     {
         Dictionary<string, PatrolProperties> settlementPatrolProperties = new Dictionary<string, PatrolProperties>();
+        List<DelayedProperties> delayedPatrols = new List<DelayedProperties>(); // delayed spawn patrols
         List<MobileParty> allPatrols = new List<MobileParty>(); // all Patrols
         List<MobileParty> playerPatrols = new List<MobileParty>(); // Player Patrols
         Random rand = new Random();
@@ -99,6 +100,10 @@ namespace BuyPatrols
             UnknownBehaviorChecker();
             if (Settings.Instance.RemoveDuplicateLords)
                 RemoveDuplicates();
+            if (delayedPatrols.Any())
+            {
+
+            }
         }
 
         private void OnHourlyTick()
@@ -144,7 +149,7 @@ namespace BuyPatrols
                     "send men on patrols. He tells he can send up to {BASILPATROL_MAX_PATROL_AMOUNT} patrols if you are willing to pay their " +
                     "gear. Your clan must own the village to hire patrols. Patrols will switch allegiance to the new clan owner if ownership changes. " +
                     "Disbanding patrols will only affect patrols that are not engaging an enemy. You can have a total of {BASILPATROLS_CAP_PATROLS} patrols in your clan. " +
-                    "You have {BASILPATROLS_CAP_LEFT} patrols you can still hire for your clan.",
+                    "You have {BASILPATROLS_CAP_LEFT} patrols you can still hire for your clan. {BASILPATROLS_STATUS}",
                     (MenuCallbackArgs args) =>
                     {
                         if (Settlement.CurrentSettlement.IsVillage)
@@ -160,6 +165,14 @@ namespace BuyPatrols
                         {
                             MBTextManager.SetTextVariable("BASILPATROL_SETTLEMENT_TYPE", "{=modbp008}castle sergeant", false);
                             MBTextManager.SetTextVariable("BASILPATROL_MAX_PATROL_AMOUNT", MaxPatrolCountPerCastle, false);
+                        }
+                        PatrolProperties patrolProperties;
+                        string settlementID = Settlement.CurrentSettlement.StringId;
+                        settlementPatrolProperties.TryGetValue(settlementID, out patrolProperties);
+                        int cost = BaseCost + patrolProperties.getPatrolCost();
+                        if (Hero.MainHero.Gold < cost)
+                        {
+                            MBTextManager.SetTextVariable("BASILPATROLS_STATUS", "{=modNoMoney}You have no money for any patrols.", false);
                         }
                         MBTextManager.SetTextVariable("BASILPATROLS_CAP_PATROLS", MaxTotalPatrols, false);
                         MBTextManager.SetTextVariable("BASILPATROLS_CAP_LEFT", (MaxTotalPatrols - playerPatrols.Count).ToString(), false);
@@ -619,15 +632,23 @@ namespace BuyPatrols
         {
             if(cost <= Hero.MainHero.Gold)
             {
-                GiveGoldAction.ApplyForCharacterToSettlement(Hero.MainHero, Settlement.CurrentSettlement, cost);
-                MobileParty party = spawnPatrol(Settlement.CurrentSettlement, TroopsPerPatrol * multiplier);
-                properties.patrols.Add(party);
-                settlementPatrolProperties[currentSettlement.StringId] = properties;
-                if (currentSettlement.OwnerClan == Clan.PlayerClan)
+                if (Settings.Instance.ToggleDelaySpawn)
                 {
-                    playerPatrols.Add(party);
+                    GiveGoldAction.ApplyForCharacterToSettlement(Hero.MainHero, Settlement.CurrentSettlement, cost);
+                    delayedPatrols.Add(new DelayedProperties(currentSettlement, multiplier, Settings.Instance.DaysDelayed));
                 }
-                allPatrols.Add(party);
+                else
+                {
+                    GiveGoldAction.ApplyForCharacterToSettlement(Hero.MainHero, Settlement.CurrentSettlement, cost);
+                    MobileParty party = spawnPatrol(Settlement.CurrentSettlement, TroopsPerPatrol * multiplier);
+                    properties.patrols.Add(party);
+                    settlementPatrolProperties[currentSettlement.StringId] = properties;
+                    if (currentSettlement.OwnerClan == Clan.PlayerClan)
+                    {
+                        playerPatrols.Add(party);
+                    }
+                    allPatrols.Add(party);
+                }
                 return true;
             }
             return false;
@@ -956,17 +977,13 @@ namespace BuyPatrols
         public void UnknownBehaviorChecker()
         {
             //int count = 0;
-            foreach (MobileParty patrol in allPatrols)
+            foreach (MobileParty patrol in MobileParty.All)
             {
-                if (patrol.Name.ToString().EndsWith(patrolWord.ToString()))
+                if (patrol.Name.ToString().EndsWith(patrolWord.ToString()) || patrol.Name.Contains("Patrol")) 
                 {
                     if (patrol.Ai.AiState == AIState.Undefined) 
                     {
-                        //patrol.Ai.SetAIState(AIState.PatrollingAroundLocation);
-                        patrol.SetMoveGoToPoint(patrol.FindReachablePointAroundPosition(patrol.HomeSettlement.GatePosition, 10));
-                        //count++;
-                        //InformationManager.DisplayMessage(new InformationMessage("Found unknown behavior patrol: " + patrol.Name + ":" + patrol.StringId, Colors.White));
-                        //patrol.SetMovePatrolAroundSettlement(patrol.HomeSettlement);
+                        patrol.SetMovePatrolAroundSettlement(patrol.HomeSettlement);
                     }
                     //else if (patrol.Ai.AiState == AIState.Undefined && patrol.IsDisbanding)
                     //{
@@ -1153,6 +1170,7 @@ namespace BuyPatrols
             dataStore.SyncData("settlementPatrolProperties", ref settlementPatrolProperties);
             dataStore.SyncData("allPatrols", ref allPatrols);
             dataStore.SyncData("playerPatrols", ref playerPatrols);
+            dataStore.SyncData("delayedPatrols", ref delayedPatrols);
         }
         
         public class BannerlordPatrolSaveDefiner : SaveableTypeDefiner
@@ -1164,11 +1182,13 @@ namespace BuyPatrols
             protected override void DefineClassTypes()
             {
                 AddClassDefinition(typeof(PatrolProperties), 1);
+                AddClassDefinition(typeof(DelayedProperties), 2);
             }
 
             protected override void DefineContainerDefinitions()
             {
                 ConstructContainerDefinition(typeof(Dictionary<string, PatrolProperties>));
+                ConstructContainerDefinition(typeof(List<DelayedProperties>));
             }
         }
 

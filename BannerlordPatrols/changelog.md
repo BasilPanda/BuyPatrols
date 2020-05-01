@@ -1,5 +1,7 @@
 ﻿Version 1.3.5:
 - Added option for patrols to be made of mercenaries.
+- Changed options relating to patrol troop type to a drop down.
+- Added text to patrol menu if player has no money to buy any patrols.
 
 Version 1.3.4:
 - Updated to Mod Configuration Menu v2.0.10

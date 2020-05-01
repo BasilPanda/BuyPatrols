@@ -136,6 +136,14 @@ namespace BuyPatrols
         [SettingPropertyGroup("{=modbpoptionMiscSettings}Miscellaneous")]
         public int PatrolTetherRange { get; set; } = 15;
 
+        [SettingPropertyBool("{=modbpoptionDelaySpawn}Delayed Spawn", Order = 3, HintText = "{=modbpoptionDelaySpawnHint}When enabled, patrols will not spawn immediately to add immersion. The 'Days Delayed' determines how long the delay is.")]
+        [SettingPropertyGroup("{=modbpoptionMiscSettings}Miscellaneous")]
+        public bool ToggleDelaySpawn { get; set; } = false;
+
+        [SettingPropertyInteger("{=modbpoptionDaysDelay}Days Delayed", 1, 7, Order = 4, RequireRestart = false, HintText = "{=modbpoptionDaysDelay}The number of days before a patrol will be delayed into spawning after purchase.")]
+        [SettingPropertyGroup("{=modbpoptionMiscSettings}Miscellaneous")]
+        public int DaysDelayed { get; set; } = 3;
+
         #endregion
 
         #region Lord Patrols

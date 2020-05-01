@@ -104,5 +104,6 @@
     <string id="modbpoption065" text="When enabled, other lords will try to hire patrols for their castles."/>
     <string id="modbpoption066" text="Town"/>
     <string id="modbpoption067" text="When enabled, other lords will try to hire patrols for their towns."/>
+    <string id="modNoMoney" text="You have no money for any patrols."/>
   </strings>
 </base>
