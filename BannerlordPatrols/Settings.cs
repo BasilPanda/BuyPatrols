@@ -2,6 +2,7 @@
 using MBOptionScreen.Attributes;
 using TaleWorlds.Localization;
 using MBOptionScreen.Attributes.v2;
+using MBOptionScreen.Data;
 
 namespace BuyPatrols
 {
@@ -30,9 +31,14 @@ namespace BuyPatrols
         [SettingPropertyGroup("{=modbpoptionPatrolSettings}Patrol Settings")]
         public bool TargetVillagers { get; set; } = false;
 
-        [SettingPropertyBool("{=modbpoption010}Use Militia", Order = 2, RequireRestart = false, HintText = "{=modbpoption011}When enabled, all patrols will be militia instead of standard troops.")]
+        [SettingPropertyDropdown("{=modbpoption010}Patrol Troop Type", Order = 2, RequireRestart = false, HintText = "{=modbpoption011}Sets the type of troops that patrols will be comprised of.")]
         [SettingPropertyGroup("{=modbpoptionPatrolSettings}Patrol Settings")]
-        public bool UseMilitia { get; set; } = false;
+        public DefaultDropdown<string> TroopType { get; set; } = new DefaultDropdown<string>(new string[]
+        {
+            "Standard",
+            "Militia",
+            "Mercenary"
+        }, 0);
 
         [SettingPropertyBool("{=modbpoption012}Enable Bonus Speed to Patrols", Order = 3, HintText = "{=modbpoption013}When enabled, all patrols will gain bonus speed from the add patrol speed option.")]
         [SettingPropertyGroup("{=modbpoptionPatrolSettings}Patrol Settings")]

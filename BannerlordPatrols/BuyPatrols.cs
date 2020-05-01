@@ -579,10 +579,14 @@ namespace BuyPatrols
         public MobileParty spawnPatrol(Settlement settlement, int amount)
         {
             PartyTemplateObject partyTemplate;
-            if (Settings.Instance.UseMilitia)
+            if (Settings.Instance.TroopType.SelectedValue == "Militia")
             {
                 partyTemplate = settlement.Culture.MilitiaPartyTemplate;
-            } else
+            } else if (Settings.Instance.TroopType.SelectedValue == "Mercenary")
+            {
+                partyTemplate = MBObjectManager.Instance.GetObject<PartyTemplateObject>("buypatrols_mercs");
+            }
+            else
             {
                 partyTemplate = settlement.Culture.DefaultPartyTemplate;
             }

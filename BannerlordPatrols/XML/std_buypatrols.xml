@@ -46,8 +46,8 @@
     <string id="modbpoption007" text="When enabled, all patrols will target caravans."/>
     <string id="modbpoption008" text="Target Villagers"/>
     <string id="modbpoption009" text="When enabled, all patrols will target villagers."/>
-    <string id="modbpoption010" text="Use Militia"/>
-    <string id="modbpoption011" text="When enabled, all patrols will be militia instead of standard troops."/>
+    <string id="modbpoption010" text="Patrol Troop Type"/>
+    <string id="modbpoption011" text="Sets the type of troops that patrols will be comprised of."/>
     <string id="modbpoption012" text="Enable Bonus Speed to Patrols"/>
     <string id="modbpoption013" text="When enabled, all patrols will gain bonus speed from the add patrol speed option."/>
     <string id="modbpoption014" text="Patrol Wages Hint Box"/>

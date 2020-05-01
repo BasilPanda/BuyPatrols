@@ -1,4 +1,7 @@
-﻿Version 1.3.4:
+﻿Version 1.3.5:
+- Added option for patrols to be made of mercenaries.
+
+Version 1.3.4:
 - Updated to Mod Configuration Menu v2.0.10
 - Added options for AI to toggle hiring for village and walled settlements.
 

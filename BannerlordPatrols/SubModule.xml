@@ -2,7 +2,7 @@
 <Module>
   <Name value="BuyPatrols"/>
   <Id value="zzzBuyPatrols"/>
-  <Version value="v1.3.2"/>
+  <Version value="v1.3.5"/>
   <SingleplayerModule value="true"/>
   <MultiplayerModule value="false"/>
   <Official value="false" />
@@ -10,27 +10,37 @@
     <DependedModule Id="Native" />
     <DependedModule Id="SandBoxCore" />
     <DependedModule Id="Sandbox" />
-	<DependedModule Id="CustomBattle"/>
+    <DependedModule Id="CustomBattle"/>
     <DependedModule Id="StoryMode" />
   </DependedModules>
   <SubModules>
-	<SubModule>
-	  <Name value="MBOptionScreen" />
-	  <DLLName value="MBOptionScreen.v2.0.6.dll" />
-	  <SubModuleClassType value="MBOptionScreen.MBOptionScreenSubModule" />
-	  <Tags>
-		<Tag key="DedicatedServerType" value="none" />
-		<Tag key="IsNoRenderModeElement" value="false" />
-	  </Tags>
-	</SubModule>
-	<SubModule>
-	  <Name value="BuyPatrols"/>
-	  <DLLName value="BuyPatrols.dll"/>
-	  <SubModuleClassType value="BuyPatrols.BuyPatrolsSubmodule"/>
-	  <Tags>
-		<Tag key="DedicatedServerType" value="none" />
-		<Tag key="IsNoRenderModeElement" value="false" />
-	  </Tags>
-	</SubModule>
+    <SubModule>
+      <Name value="MBOptionScreen" />
+      <DLLName value="MBOptionScreen.v2.0.10.dll" />
+      <SubModuleClassType value="MBOptionScreen.MBOptionScreenSubModuleV2010" />
+      <Tags>
+        <Tag key="DedicatedServerType" value="none" />
+        <Tag key="IsNoRenderModeElement" value="false" />
+      </Tags>
+    </SubModule>
+    <SubModule>
+      <Name value="BuyPatrols"/>
+      <DLLName value="BuyPatrols.dll"/>
+      <SubModuleClassType value="BuyPatrols.BuyPatrolsSubmodule"/>
+      <Tags>
+        <Tag key="DedicatedServerType" value="none" />
+        <Tag key="IsNoRenderModeElement" value="false" />
+      </Tags>
+    </SubModule>
   </SubModules>
+  <Xmls>
+    <XmlNode>
+      <XmlName id="partyTemplates" path="CustomPartyTemplates"/>
+      <IncludedGameTypes>
+        <GameType value = "Campaign"/>
+        <GameType value = "CampaignStoryMode"/>
+        <GameType value = "CustomGame"/>
+      </IncludedGameTypes>
+    </XmlNode>
+  </Xmls>
 </Module>
