@@ -54,5 +54,18 @@ namespace BuyPatrols
             }
             return count;
         }
+
+        public static int GetDelayedPatrolsOfSettlement(Settlement settlement, List<DelayedProperties> delayed)
+        {
+            int total = 0;
+            foreach(DelayedProperties props in delayed)
+            {
+                if(props.settlement.StringId == settlement.StringId)
+                {
+                    total++;
+                }
+            }
+            return total;
+        }
     }
 }

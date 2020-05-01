@@ -2,7 +2,9 @@
 - Added option for patrols to be made of mercenaries.
 - Added text to patrol menu if player has no money to buy any patrols.
 - Changed options relating to patrol troop type to a drop down.
+- Disband option now ends patrols' battles and deletes them immediately to prevent crashing and abuse of stockpiling garrisons.
 - Fixed mod option ordering.
+- Removal options now end battles before deleting to prevent crashing
 - Removed some unnecessary game restarts for mod options.
 
 Version 1.3.4:
