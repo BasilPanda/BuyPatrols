@@ -50,7 +50,7 @@ namespace BuyPatrols
         public bool PatrolWagesHintBox { get; set; } = true;
         
         
-        [SettingPropertyBool("{=modbpoption016}Notify Patrol Destroyed", Order = 5, HintText = "{=modbpoption017}When enabled, will send a notification on the bottom left when a personal patrol has been destroyed. Only applies for new patrols.")]
+        [SettingPropertyBool("{=modbpoption016}Notify Patrol Destroyed", Order = 5, RequireRestart = false, HintText = "{=modbpoption017}When enabled, will send a notification on the bottom left when a personal patrol has been destroyed. Only applies for new patrols.")]
         [SettingPropertyGroup("{=modbpoptionPatrolSettings}Patrol Settings")]
         public bool NotifyDestroyedPatrol { get; set; } = true;
 
@@ -122,12 +122,12 @@ namespace BuyPatrols
         #region Misc Settings
 
 
-        [SettingPropertyBool("{=modbpoption038}Force Troop Capacity", Order = 0, HintText =  "{=modbpoption039}When enabled, forces patrols to be capped at large patrol size. Will randomly remove troops over the large patrol size.")]
+        [SettingPropertyBool("{=modbpoption038}Force Troop Capacity", Order = 0, RequireRestart = false, HintText =  "{=modbpoption039}When enabled, forces patrols to be capped at large patrol size. Will randomly remove troops over the large patrol size.")]
         [SettingPropertyGroup("{=modbpoptionMiscSettings}Miscellaneous")]
         public bool ForceTroopCapEnabled { get; set; } = false;
 
 
-        [SettingPropertyBool("{=modbpoption040}Patrol Regeneration", Order = 1, HintText =  "{=modbpoption041}When enabled, allows patrols to slowly regenerate on a daily basis up to large size.")]
+        [SettingPropertyBool("{=modbpoption040}Patrol Regeneration", Order = 1, RequireRestart = false, HintText =  "{=modbpoption041}When enabled, allows patrols to slowly regenerate on a daily basis up to large size.")]
         [SettingPropertyGroup("{=modbpoptionMiscSettings}Miscellaneous")]
         public bool ForceRegenPatrol { get; set; } = false;
 
@@ -136,7 +136,7 @@ namespace BuyPatrols
         [SettingPropertyGroup("{=modbpoptionMiscSettings}Miscellaneous")]
         public int PatrolTetherRange { get; set; } = 15;
 
-        [SettingPropertyBool("{=modbpoptionDelaySpawn}Delayed Spawn", Order = 3, HintText = "{=modbpoptionDelaySpawnHint}When enabled, patrols will not spawn immediately to add immersion. The 'Days Delayed' determines how long the delay is.")]
+        [SettingPropertyBool("{=modbpoptionDelaySpawn}Delayed Spawn", Order = 3, RequireRestart = false, HintText = "{=modbpoptionDelaySpawnHint}When enabled, patrols will not spawn immediately to add immersion. The 'Days Delayed' determines how long the delay is.")]
         [SettingPropertyGroup("{=modbpoptionMiscSettings}Miscellaneous")]
         public bool ToggleDelaySpawn { get; set; } = false;
 
@@ -152,45 +152,45 @@ namespace BuyPatrols
         [SettingPropertyGroup("{=modbpoptionAISettings}Ai Hiring Settings")]
         public bool AiHirePatrols { get; set; } = true;
 
-        [SettingPropertyBool("{=modbpoption062}Village", Order = 0, RequireRestart = false, HintText = "{=modbpoption063}When enabled, other lords will try to hire patrols for their villages.")]
+        [SettingPropertyBool("{=modbpoption062}Village", Order = 1, RequireRestart = false, HintText = "{=modbpoption063}When enabled, other lords will try to hire patrols for their villages.")]
         [SettingPropertyGroup("{=modbpoptionAISettings}Ai Hiring Settings")]
         public bool AiVillagePatrols { get; set; } = true;
 
-        [SettingPropertyBool("{=modbpoption064}Castle", Order = 0, RequireRestart = false, HintText = "{=modbpoption065}When enabled, other lords will try to hire patrols for their castles.")]
+        [SettingPropertyBool("{=modbpoption064}Castle", Order = 2, RequireRestart = false, HintText = "{=modbpoption065}When enabled, other lords will try to hire patrols for their castles.")]
         [SettingPropertyGroup("{=modbpoptionAISettings}Ai Hiring Settings")]
         public bool AiCastlePatrols { get; set; } = true;
 
-        [SettingPropertyBool("{=modbpoption066}Town", Order = 0, RequireRestart = false, HintText = "{=modbpoption067}When enabled, other lords will try to hire patrols for their towns.")]
+        [SettingPropertyBool("{=modbpoption066}Town", Order = 3, RequireRestart = false, HintText = "{=modbpoption067}When enabled, other lords will try to hire patrols for their towns.")]
         [SettingPropertyGroup("{=modbpoptionAISettings}Ai Hiring Settings")]
         public bool AiTownPatrols { get; set; } = true;
 
-        [SettingPropertyInteger("{=modbpoption046}Patrol Hiring Chance", 1, 100, Order = 1, RequireRestart = false, HintText =  "{=modbpoption047}The daily chance that other lords will hire a patrol per village if it is below the settlement limit.")]
+        [SettingPropertyInteger("{=modbpoption046}Patrol Hiring Chance", 1, 100, Order = 4, RequireRestart = false, HintText =  "{=modbpoption047}The daily chance that other lords will hire a patrol per village if it is below the settlement limit.")]
         [SettingPropertyGroup("{=modbpoptionAISettings}Ai Hiring Settings")]
         public int AiGenerationChance { get; set; } = 5;
 
 
-        [SettingPropertyInteger("{=modbpoption048}Hearth Limit", 250, 2000, Order = 2, RequireRestart = false, HintText =  "{=modbpoption049}If a village's hearth is below this number, the lord will run the chance to spawn a patrol for it.")]
+        [SettingPropertyInteger("{=modbpoption048}Hearth Limit", 250, 2000, Order = 5, RequireRestart = false, HintText =  "{=modbpoption049}If a village's hearth is below this number, the lord will run the chance to spawn a patrol for it.")]
         [SettingPropertyGroup("{=modbpoptionAISettings}Ai Hiring Settings")]
         public int HearthMaximum { get; set; } = 500;
 
-        [SettingPropertyInteger("{=modbpoption050}Castle Prosperity Limit", 250, 10000, Order = 3, RequireRestart = false, HintText =  "{=modbpoption051}If a castle's prosperity is below this number, the lord will run the chance to spawn a patrol for it.")]
+        [SettingPropertyInteger("{=modbpoption050}Castle Prosperity Limit", 250, 10000, Order = 6, RequireRestart = false, HintText =  "{=modbpoption051}If a castle's prosperity is below this number, the lord will run the chance to spawn a patrol for it.")]
         [SettingPropertyGroup("{=modbpoptionAISettings}Ai Hiring Settings")]
         public int AICastleProsperity { get; set; } = 1000;
 
-        [SettingPropertyInteger("{=modbpoption052}Town Prosperity Limit", 250, 10000, Order = 4, RequireRestart = false, HintText =  "{=modbpoption053}If a town's prosperity is below this number, the lord will run the chance to spawn a patrol for it.")]
+        [SettingPropertyInteger("{=modbpoption052}Town Prosperity Limit", 250, 10000, Order = 7, RequireRestart = false, HintText =  "{=modbpoption053}If a town's prosperity is below this number, the lord will run the chance to spawn a patrol for it.")]
         [SettingPropertyGroup("{=modbpoptionAISettings}Ai Hiring Settings")]
         public int AITownProsperity { get; set; } = 2000;
 
-        [SettingPropertyFloatingInteger("{=modbpoption054}Patrol Bonus Speed", 0, 10, Order = 5, RequireRestart = false, HintText =  "{=modbpoption055}The bonus speed that will be added to AI hired patrols.")]
+        [SettingPropertyFloatingInteger("{=modbpoption054}Patrol Bonus Speed", 0, 10, Order = 8, RequireRestart = false, HintText =  "{=modbpoption055}The bonus speed that will be added to AI hired patrols.")]
         [SettingPropertyGroup("{=modbpoptionAISettings}Ai Hiring Settings")]
         public float AddPatrolSpeedForAi { get; set; } = 0.5f;
 
 
-        [SettingPropertyInteger("{=modbpoption056}Max Patrols Per Settlement", 0, 10, Order = 6, RequireRestart = false, HintText =  "{=modbpoption057}The maximum amount of patrols the AI will hire per settlement.")]
+        [SettingPropertyInteger("{=modbpoption056}Max Patrols Per Settlement", 0, 10, Order = 9, RequireRestart = false, HintText =  "{=modbpoption057}The maximum amount of patrols the AI will hire per settlement.")]
         [SettingPropertyGroup("{=modbpoptionAISettings}Ai Hiring Settings")]
         public int AiMaxPatrolPerSettlement { get; set; } = 1;
 
-        [SettingPropertyInteger("{=modbpoption060}Additional Patrols", 0, 15, Order = 7, RequireRestart = false, HintText =  "{=modbpoption061}The base amount of patrols the AI will hire under their clan. This is added to their current clan tier for the cap.")]
+        [SettingPropertyInteger("{=modbpoption060}Additional Patrols", 0, 15, Order = 10, RequireRestart = false, HintText =  "{=modbpoption061}The base amount of patrols the AI will hire under their clan. This is added to their current clan tier for the cap.")]
         [SettingPropertyGroup("{=modbpoptionAISettings}Ai Hiring Settings")]
         public int AiAdditionalPatrolToClan { get; set; } = 0;
 

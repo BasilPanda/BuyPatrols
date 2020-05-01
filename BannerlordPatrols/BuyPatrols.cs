@@ -100,9 +100,9 @@ namespace BuyPatrols
             UnknownBehaviorChecker();
             if (Settings.Instance.RemoveDuplicateLords)
                 RemoveDuplicates();
-            if (delayedPatrols.Any())
+            if (delayedPatrols.Count != 0)
             {
-
+                CheckDelayed();
             }
         }
 
@@ -208,7 +208,7 @@ namespace BuyPatrols
                             string settlementID = Settlement.CurrentSettlement.StringId;
                             settlementPatrolProperties.TryGetValue(settlementID, out patrolProperties);
                             int cost = BaseCost + patrolProperties.getPatrolCost();
-                            if (AttemptAddPatrolToDictionary(Settlement.CurrentSettlement, patrolProperties, cost))
+                            if (AttemptAddPatrol(Settlement.CurrentSettlement, patrolProperties, cost))
                             {
                                 TextObject text = new TextObject("{=modbp009}You have hired a patrol at {BUYPATROLSCURRENTSETTLEMENT}.");
                                 text.SetTextVariable("BUYPATROLSCURRENTSETTLEMENT", Settlement.CurrentSettlement.ToString());
@@ -252,7 +252,7 @@ namespace BuyPatrols
                             string settlementID = Settlement.CurrentSettlement.StringId;
                             settlementPatrolProperties.TryGetValue(settlementID, out patrolProperties);
                             int cost = (BaseCost + patrolProperties.getPatrolCost()) * 2;
-                            if (AttemptAddPatrolToDictionary(Settlement.CurrentSettlement, patrolProperties, cost, 2))
+                            if (AttemptAddPatrol(Settlement.CurrentSettlement, patrolProperties, cost, 2))
                             {
                                 TextObject text = new TextObject("{=modbp009}You have hired a patrol at {BUYPATROLSCURRENTSETTLEMENT}.");
                                 text.SetTextVariable("BUYPATROLSCURRENTSETTLEMENT", Settlement.CurrentSettlement.ToString());
@@ -297,7 +297,7 @@ namespace BuyPatrols
                             string settlementID = Settlement.CurrentSettlement.StringId;
                             settlementPatrolProperties.TryGetValue(settlementID, out patrolProperties);
                             int cost = (BaseCost + patrolProperties.getPatrolCost()) * 3;
-                            if (AttemptAddPatrolToDictionary(Settlement.CurrentSettlement, patrolProperties, cost, 3))
+                            if (AttemptAddPatrol(Settlement.CurrentSettlement, patrolProperties, cost, 3))
                             {
                                 TextObject text = new TextObject("{=modbp009}You have hired a patrol at {BUYPATROLSCURRENTSETTLEMENT}.");
                                 text.SetTextVariable("BUYPATROLSCURRENTSETTLEMENT", Settlement.CurrentSettlement.ToString());
@@ -628,30 +628,51 @@ namespace BuyPatrols
             GenerateFood(patrolParty);
         }
 
-        private bool AttemptAddPatrolToDictionary(Settlement currentSettlement, PatrolProperties properties, int cost, int multiplier = 1)
+        private bool AttemptAddPatrol(Settlement currentSettlement, PatrolProperties properties, int cost, int multiplier = 1)
         {
             if(cost <= Hero.MainHero.Gold)
             {
+                GiveGoldAction.ApplyForCharacterToSettlement(Hero.MainHero, Settlement.CurrentSettlement, cost);
                 if (Settings.Instance.ToggleDelaySpawn)
                 {
-                    GiveGoldAction.ApplyForCharacterToSettlement(Hero.MainHero, Settlement.CurrentSettlement, cost);
                     delayedPatrols.Add(new DelayedProperties(currentSettlement, multiplier, Settings.Instance.DaysDelayed));
                 }
                 else
                 {
-                    GiveGoldAction.ApplyForCharacterToSettlement(Hero.MainHero, Settlement.CurrentSettlement, cost);
-                    MobileParty party = spawnPatrol(Settlement.CurrentSettlement, TroopsPerPatrol * multiplier);
-                    properties.patrols.Add(party);
-                    settlementPatrolProperties[currentSettlement.StringId] = properties;
-                    if (currentSettlement.OwnerClan == Clan.PlayerClan)
-                    {
-                        playerPatrols.Add(party);
-                    }
-                    allPatrols.Add(party);
+                    AddPatrolToSave(currentSettlement, multiplier, properties);
                 }
                 return true;
             }
             return false;
+        }
+
+        public void CheckDelayed()
+        {
+            foreach(DelayedProperties props in delayedPatrols.ToList())
+            {
+                if(props.days == 0)
+                {
+                    PatrolProperties patrolProps;
+                    settlementPatrolProperties.TryGetValue(props.settlement.StringId, out patrolProps);
+                    AddPatrolToSave(props.settlement, props.multiplier, patrolProps);
+                    delayedPatrols.Remove(props);
+                } else
+                {
+                    props.days -= 1;
+                }
+            }
+        }
+
+        public void AddPatrolToSave(Settlement settlement, int multiplier, PatrolProperties properties)
+        {
+            MobileParty party = spawnPatrol(Settlement.CurrentSettlement, TroopsPerPatrol * multiplier);
+            properties.patrols.Add(party);
+            settlementPatrolProperties[settlement.StringId] = properties;
+            if (settlement.OwnerClan == Clan.PlayerClan)
+            {
+                playerPatrols.Add(party);
+            }
+            allPatrols.Add(party);
         }
 
         #endregion
