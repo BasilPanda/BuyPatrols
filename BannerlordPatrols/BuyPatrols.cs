@@ -100,7 +100,7 @@ namespace BuyPatrols
             {
                 AttemptToDestroyAllPatrols();
             }
-            //UnknownBehaviorChecker();
+            UnknownBehaviorChecker();
             if (Settings.Instance.RemoveDuplicateLords)
                 RemoveDuplicates();
             //if (delayedPatrols.Count != 0)
@@ -112,7 +112,7 @@ namespace BuyPatrols
         private void OnHourlyTick()
         {
             PatrolHourlyAi();
-            UnknownBehaviorChecker();
+            //UnknownBehaviorChecker();
         }
 
         public override void RegisterEvents()

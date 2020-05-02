@@ -1,4 +1,7 @@
-﻿Version 1.3.5:
+﻿Version 1.3.6:
+- Fixed patrols not engaging parties. 
+
+Version 1.3.5:
 - Added option for patrols to be made of mercenaries.
 - Added text to patrol menu if player has no money to buy any patrols.
 - Changed options relating to patrol troop type to a drop down.
