@@ -70,7 +70,10 @@ namespace BuyPatrols
             try
             {
                 if (Settings.Instance.RemoveDuplicateLords)
-                    RemoveDuplicates();
+                {
+                    TextObject warning = new TextObject("{=modbpRemoveDupes}BuyPatrols WARNING: REMOVING ALL DUPE LORDS.");
+                    InformationManager.DisplayMessage(new InformationMessage(warning.ToString(), Colors.Magenta));
+                }
             } catch(Exception e)
             {
                 MessageBox.Show("Error in deleting duped lords. " + e.ToString());
@@ -89,7 +92,7 @@ namespace BuyPatrols
             {
                 IncreaseRelations();
             }
-            if(Settings.Instance.AiHirePatrols)
+            if (Settings.Instance.AiHirePatrols)
             {
                 AiGeneratePatrols();
             }
@@ -922,7 +925,7 @@ namespace BuyPatrols
         public void AttemptToDestroyAllPatrols()
         {
             PatrolProperties properties;
-            int remaining = 0;
+            //int remaining = 0;
             int destroyed = 0;
             foreach(string id in settlementPatrolProperties.Keys.ToList())
             {
@@ -961,6 +964,8 @@ namespace BuyPatrols
                     }
                 }
             }
+            playerPatrols.Clear();
+            allPatrols.Clear();
             TextObject removed = new TextObject("{=modbp003}{PATROLSREMOVED} patrols have been removed today.");
             removed.SetTextVariable("PATROLSREMOVED", destroyed);
             //TextObject remainingText = new TextObject("{=modbp005}There are {PATROLSREMAINING} patrols remaining and are currently in engagement.");
@@ -1018,10 +1023,10 @@ namespace BuyPatrols
                 {
                     if (party.Ai.AiState == AIState.Undefined) 
                     {
-                        if(party.HomeSettlement.OwnerClan == Clan.PlayerClan)
-                            InformationManager.DisplayMessage(new InformationMessage("UKP: " + party.Name, Colors.White));
-                        party.IsVisible = false;
-                        party.Party.Visuals.OnPartyRemoved();
+                        //if(party.HomeSettlement.OwnerClan == Clan.PlayerClan)
+                            //InformationManager.DisplayMessage(new InformationMessage("UKP: " + party.Name, Colors.White));
+                        //party.IsVisible = false;
+                        //party.Party.Visuals.OnPartyRemoved();
                         party.Ai.RethinkAtNextHourlyTick = true;
                         //party.Ai.SetAIState(AIState.PatrollingAroundLocation);
                         party.SetMovePatrolAroundSettlement(party.HomeSettlement);
@@ -1202,7 +1207,10 @@ namespace BuyPatrols
                         }
                         else
                         {
-                            party.MapEvent.FinishBattle();
+                            if (party.MapEvent != null)
+                            {
+                                party.MapEvent.FinishBattle();
+                            }
                             InformationManager.DisplayMessage(new InformationMessage("Removed duplicate lord party: " + party.Name, Colors.Red));
                             party.RemoveParty();
                         }
