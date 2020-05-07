@@ -1,6 +1,5 @@
-﻿TODO Version 1.3.7:
-- Add option for AI lords to buy patrols at a certain player clan tier.
-- 
+﻿Version 1.3.7:
+- Updated for the most recent beta branch (will not push an update for stable at this time).
 
 Version 1.3.6:
 - Fixed patrols not engaging parties. 

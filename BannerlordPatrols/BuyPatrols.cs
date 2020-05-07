@@ -611,9 +611,7 @@ namespace BuyPatrols
             {
                 partyTemplate = settlement.Culture.DefaultPartyTemplate;
             }
-            int numberOfCreated = partyTemplate.NumberOfCreated;
-            partyTemplate.IncrementNumberOfCreated();
-            MobileParty mobileParty = MBObjectManager.Instance.CreateObject<MobileParty>(settlement.OwnerClan.StringId + "_" + numberOfCreated);
+            MobileParty mobileParty = MBObjectManager.Instance.CreateObject<MobileParty>(settlement.OwnerClan.StringId + "_Patrol");
 
             TextObject textObject;
             textObject = new TextObject("{BASILPATROL_SETTLEMENT_NAME} " + patrolWord, null);
