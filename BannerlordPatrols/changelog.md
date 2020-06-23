@@ -1,4 +1,11 @@
-﻿Version 1.3.7:
+﻿Version 1.4.2
+- Updated for Bannerlord e1.4.2
+- Old saves will crash eventually.
+
+Version 1.4.1
+- Updated for Bannerlord e1.4.1
+
+Version 1.3.7:
 - Updated for the most recent beta branch (will not push an update for stable at this time).
 
 Version 1.3.6:
